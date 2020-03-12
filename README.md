@@ -1,12 +1,12 @@
 # Nombre del proyecto
 
-Application to be awesome
+Sistema de Inscripciones PBI (Sitio Web)
 
 ## Table of contents
 
 * [Client Details](#client-details)
 * [Environment URLS](#environment-urls)
-* [Da Team](#team)
+* [Team members](#team-members)
 * [Technology Stack](#technology-stack)
 * [Management resources](#management-resources)
 * [Setup the project](#setup-the-project)
@@ -20,75 +20,81 @@ Application to be awesome
 
 ### Client Details
 
-| Name               | Email             | Role |
-| ------------------ | ----------------- | ---- |
-| Nombre del cliente | prueba@prueba.com | CEO  |
+| Name                         | Email             | Role                                                                               |
+| ---------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
+| Patricia Magdalena González  | patygzz@tec.mx    | Directora en Dirección de Bienestar y Consejería ITESM Campus Mty.                 |
+| Sandra Nohemí Ramos Hernández| snrh@tec.mx       | Especialista de bienestar en Dirección de Bienestar y Consejería ITESM Campus Mty. | 
 
 
 ### Environment URLS
 
-* **Production** - [TBD](TBD)
+* **Production** - [TBD](inscripcionespbitec.firebaseapp.com)
 * **Development** - [TBD](TBD)
 
-### Da team
+### Team members
 
-| Name           | Email             | Role        |
-| -------------- | ----------------- | ----------- |
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
-| Nombre miembro | prueba@prueba.com | Development |
+Version 1.0
+| Name                              | Email                   | Role                              |
+| --------------------------------- | ----------------------- | --------------------------------- |
+|Lizzie Marielle Guajardo Mozo      | lizziemgm97@gmail.com   | Desarrollador                     |
+|Alejandro González Valles          | alex.glz.v@hotmail.com  | Desarrollador                     |
+|David Rojas Ortíz                  | dav_rojas@hotmail.com   | Desarrollador                     |
+|Jonathan Melesio Cárdenas García   | jonathancrd@outlook.com | Desarrollador                     |
+|Lizzie Montserrat Cañamar Carrillo | lizziecanamar@gmail.com | Desarrollador                     |
+
+Version 2.0
+| Name                              | Email                   | Role                              |
+| --------------------------------- | ----------------------- | --------------------------------- |
+|Lizzie Marielle Guajardo Mozo      | lizziemgm97@gmail.com   | Producto Owner Proxy              |
+|Alejandro González Valles          | alex.glz.v@hotmail.com  | Administrador de Configuración    |
+|David Rojas Ortíz                  | dav_rojas@hotmail.com   | SCRUM Master                      |
+|Lizzie Montserrat Cañamar Carrillo | lizziecanamar@gmail.com | Administrador de Proyecto         |
 
 ### Technology Stack
-| Technology    | Version      |
-| ------------- | -------------|
-| Technology 1  | ##.##.##     |
-| Technology 2  | ##.##.##     |
-| Technology 3  | ##.##.##     |
+| Technology      | Version      |
+| --------------- | ------------ |
+| bcrypt          | 3.0.6        |
+| express         | 4.17.1       |
+| moment-timezone | 0.5.27       |
+| mongoose        | 5.7.3        |
+| nodemailer      | 6.3.1        |
 
 ### Management tools
 
 You should ask for access to this tools if you don't have it already:
 
-* [Github repo](https://github.com/)
+* [Github repo](https://github.com/ProyectoIntegrador2018/pbi-api)
 * [Backlog]()
-* [Heroku](https://crowdfront-staging.herokuapp.com/)
-* [Documentation](https://drive.com)
+* [Heroku](https://inscripcionespbi-backend.herokuapp.com) (API)
+* [Documentation](https://drive.google.com/drive/u/2/folders/1HxzSv_UqLsO1F6e_aaYM3d7Hoos28w91)
 
 ## Development
 
 ### Setup the project
 
-You'll definitely want to install [`plis`](https://github.com/IcaliaLabs/plis), as in this case will
-let you bring up the containers needed for development. This is done by running the command
-`plis start`, which will start up the services in the `development` group (i.e. rails
-and sidekiq), along with their dependencies (posgres, redis, etc).
-
-After installing please you can follow this simple steps:
+In order to correctly set up [`pbi-api`](https://github.com/ProyectoIntegrador2018/pbi-api) you will need to follow
+some steps:
 
 1. Clone this repository into your local machine
 
 ```bash
-$ git clone git@github.com:IcaliaLabs/crowdfront.git
+$ git clone git@github.com:ProyectoIntegrador2018/pbi-api.git
 ```
 
-2. Fire up a terminal and run:
+2. Fire up a terminal and run to download the node modules required:
 
 ```bash
-$ plis run web bash
+$ npm install
 ```
 
-3. Inside the container you need to migrate the database:
-
-```
-% rails db:migrate
-```
+3. This back-end API works with this backend [`pbi-front`](https://github.com/ProyectoIntegrador2018/pbi-api)
 
 ### Running the stack for Development
 
 1. Fire up a terminal and run: 
 
 ```
-plis start
+node index.js
 ```
 
 That command will lift every service crowdfront needs, such as the `rails server`, `postgres`, and `redis`.
