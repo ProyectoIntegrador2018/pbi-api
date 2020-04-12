@@ -1,5 +1,5 @@
 node_modules/
-BACKEND/config.js
+config.js
 
 .DS_Store
 /dist

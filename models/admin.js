@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
 	var SECRET = config.secret;
 }
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
@@ -45,9 +45,9 @@ const userSchema = new mongoose.Schema({
 			type: Number,
 			default: 0
 		},
-		// birthDate: {
-		// 	type:	Date
-		// },
+		//  birthDate: {
+		//  	type:	Date
+		//  },
 		insuranceCompany: {
 			type: String,
 			default: ""
@@ -114,10 +114,6 @@ const userSchema = new mongoose.Schema({
 			required: true
 		}
 	}],
-	locker:{
-		type: mongoose.Schema.Types.ObjectID,
-		ref: 'Locker'
-	},
 	password: {
 		type: String,
 		required: true,
@@ -129,9 +125,6 @@ const userSchema = new mongoose.Schema({
 	},
 	resetToken: {
 		type: String
-	},
-	isAdmin: {
-		type: Boolean
 	}
 }, {
 	toObject: {
@@ -142,34 +135,34 @@ const userSchema = new mongoose.Schema({
 	}
 })
 
-userSchema.virtual('terms', {
+adminSchema.virtual('terms', {
 	ref: 'Term',
 	localField: '_id',
-	foreignField: 'signedUser	'
+	foreignField: 'signedAdmin	'
 })
 
 
 
-userSchema.methods.toJSON = function () {
-	const user = this
-	const userObject = user.toObject()
+adminSchema.methods.toJSON = function () {
+	const admin = this
+	const adminObject = admin.toObject()
 
-	delete userObject.password
-	delete userObject.tokens
+	delete adminObject.password
+	delete adminObject.tokens
 
-	return userObject
+	return adminObject
 }
 
 
-userSchema.statics.findByCredentials = function (email, password) {
+adminSchema.statics.findByCredentials = function (email, password) {
 	return new Promise(function (resolve, reject) {
-		User.findOne({ email }).then(function (user) {
-			if (!user) {
+		Admin.findOne({ email }).then(function (admin) {
+			if (!admin) {
 				return reject('El usuario no existe')
 			}
-			bcrypt.compare(password, user.password).then(function (match) {
+			bcrypt.compare(password, admin.password).then(function (match) {
 				if (match) {
-					return resolve(user)
+					return resolve(admin)
 				} else {
 					return reject('Contraseña inválida')
 				}
@@ -180,12 +173,12 @@ userSchema.statics.findByCredentials = function (email, password) {
 	})
 }
 
-userSchema.methods.generateToken = function () {
-	const user = this
-	const token = jwt.sign({ _id: user._id.toString() }, SECRET, { expiresIn: '7 days' })
-	user.tokens = user.tokens.concat({ token })
+adminSchema.methods.generateToken = function () {
+	const admin = this
+	const token = jwt.sign({ _id: admin._id.toString() }, SECRET, { expiresIn: '7 days' })
+	admin.tokens = admin.tokens.concat({ token })
 	return new Promise(function (resolve, reject) {
-		user.save().then(function (user) {
+		admin.save().then(function (admin) {
 			return resolve(token)
 		}).catch(function (error) {
 			return reject(error)
@@ -193,12 +186,12 @@ userSchema.methods.generateToken = function () {
 	})
 }
 
-userSchema.methods.generateConfirmToken = function () {
-	const user = this
-	const token = jwt.sign({ _id: user._id.toString() }, SECRET, { expiresIn: '2 days' })
-	user.confirmToken = "Confirmed"
+adminSchema.methods.generateConfirmToken = function () {
+	const admin = this
+	const token = jwt.sign({ _id: admin._id.toString() }, SECRET, { expiresIn: '2 days' })
+	admin.confirmToken = "Confirmed"
 	return new Promise(function (resolve, reject) {
-		user.save().then(function (user) {
+		admin.save().then(function (admin) {
 			return resolve(token)
 		}).catch(function (error) {
 			return reject(error)
@@ -206,12 +199,12 @@ userSchema.methods.generateConfirmToken = function () {
 	})
 }
 
-userSchema.methods.generateResetToken = function () {
-	const user = this
-	const token = jwt.sign({ _id: user._id.toString() }, SECRET, { expiresIn: '2 days' })
-	user.resetToken = token
+adminSchema.methods.generateResetToken = function () {
+	const admin = this
+	const token = jwt.sign({ _id: admin._id.toString() }, SECRET, { expiresIn: '2 days' })
+	admin.resetToken = token
 	return new Promise(function (resolve, reject) {
-		user.save().then(function (user) {
+		admin.save().then(function (admin) {
 			return resolve(token)
 		}).catch(function (error) {
 			return reject(error)
@@ -219,17 +212,17 @@ userSchema.methods.generateResetToken = function () {
 	})
 }
 
-userSchema.statics.confirmUser = function (token) {
+adminSchema.statics.confirmAdmin = function (token) {
 	return new Promise(function (resolve, reject) {
 		try {
 			const decoded = jwt.verify(token, SECRET)
-			User.findOne({ _id: decoded._id, 'confirmToken': token }).then(function (user) {
-				if (!user) {
+			Admin.findOne({ _id: decoded._id, 'confirmToken': token }).then(function (admin) {
+				if (!admin) {
 					return reject("Código de confirmación inválido")
 				}
-				user.confirmToken = "Confirmed"
-				user.save().then(function (user) {
-					return resolve(user)
+				admin.confirmToken = "Confirmed"
+				admin.save().then(function (admin) {
+					return resolve(admin)
 				}).catch(function (error) {
 					return reject("No se pudo confirmar la cuenta")
 				})
@@ -243,17 +236,17 @@ userSchema.statics.confirmUser = function (token) {
 
 }
 
-userSchema.statics.resetPassword = function (token, newPass) {
+adminSchema.statics.resetPassword = function (token, newPass) {
 	return new Promise(function (resolve, reject) {
 		try {
 			const decoded = jwt.verify(token, SECRET)
-			User.findOne({ _id: decoded._id, 'resetToken': token })
-				.then(function (user) {
-					user.resetToken = ""
-					user.password = newPass
-					user.save()
-						.then(function (user) {
-							return resolve(user)
+			Admin.findOne({ _id: decoded._id, 'resetToken': token })
+				.then(function (admin) {
+					admin.resetToken = ""
+					admin.password = newPass
+					admin.save()
+						.then(function (admin) {
+							return resolve(admin)
 						}).catch(function (_) {
 							return reject("No se pudo actualizar la contraseña")
 						})
@@ -267,13 +260,13 @@ userSchema.statics.resetPassword = function (token, newPass) {
 	})
 }
 
-userSchema.statics.getUserOnTokenPass = function (token) {
+adminSchema.statics.getAdminOnTokenPass = function (token) {
 	return new Promise(function (resolve, reject) {
 		try {
 			const decoded = jwt.verify(token, SECRET)
-			User.findOne({ _id: decoded._id, 'resetToken': token })
-				.then(function (user) {
-					return resolve({ email: user.email, nomina: user.nomina })
+			Admin.findOne({ _id: decoded._id, 'resetToken': token })
+				.then(function (admin) {
+					return resolve({ email: admin.email, nomina: admin.nomina })
 				}).catch(function (_) {
 					return reject("Enlace para reestablecer la contraseña es inálido")
 				})
@@ -283,18 +276,18 @@ userSchema.statics.getUserOnTokenPass = function (token) {
 	})
 }
 
-userSchema.statics.validateToken = function (token) {
+adminSchema.statics.validateToken = function (token) {
 	//console.log("Validando")
 	return new Promise(function (resolve, reject) {
 		try {
 			const decoded = jwt.verify(token, SECRET)
 			//console.log(decoded._id)
-			User.findOne({ _id: decoded._id, 'tokens.token': token })
-				.then(function (user) {
-					if (user) {
+			Admin.findOne({ _id: decoded._id, 'tokens.token': token })
+				.then(function (admin) {
+					if (admin) {
 
-						//console.log(user.isAdmin)
-						if (user.isAdmin) {
+						//console.log(admin.isAdmin)
+						if (admin.isAdmin) {
 							resolve({ admin: true })
 						} else {
 							resolve({ admin: false })
@@ -313,11 +306,11 @@ userSchema.statics.validateToken = function (token) {
 	})
 }
 
-userSchema.pre('save', function (next) {
-	const user = this
-	if (user.isModified('password')) {
-		bcrypt.hash(user.password, 8).then(function (hash) {
-			user.password = hash
+adminSchema.pre('save', function (next) {
+	const admin = this
+	if (admin.isModified('password')) {
+		bcrypt.hash(admin.password, 8).then(function (hash) {
+			admin.password = hash
 			next()
 		}).catch(function (error) {
 			return next(error)
@@ -328,6 +321,6 @@ userSchema.pre('save', function (next) {
 })
 
 
-const User = mongoose.model('User', userSchema)
+const Admin = mongoose.model('Admin', adminSchema)
 
-module.exports = User
+module.exports = Admin

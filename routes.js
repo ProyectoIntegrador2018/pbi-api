@@ -7,7 +7,7 @@ const auth = require("./middleware/auth.js")
 const users = require('./controllers/users.js')
 const terms = require('./controllers/terms.js')
 const classes = require('./controllers/classes.js')
-const clinicalRecords = require('./controllers/clinicalRecords.js')
+const lockers = require('./controllers/lockers.js')
 
 router.all('*', cors())
 
@@ -44,6 +44,13 @@ router.put('/users/medicalRecord', auth.auth, users.fillMedicalRecord)
 router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRecordAdmin)
 router.put('/admin/users/:id',auth.authAdmin, users.updateUserByAdmin)
 router.delete('/users/:id',auth.authAdmin, users.deleteUser)
+
+router.post('/lockers', auth.authAdmin, lockers.createLocker)
+router.put('/lockers', lockers.assignLocker)
+// router.put('/lockers/:id', lockers.unassignLocker)
+// router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
+// router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
+
 
 router.post('/login', users.login)
 router.post('/logout',auth.auth,users.logout)
