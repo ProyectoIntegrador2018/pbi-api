@@ -19,10 +19,10 @@ const lockerSchema = new mongoose.Schema({
 		type:		Number,
 		required:	true
 	},
-	lockers: {
-		type:		[mongoose.Schema.Types.ObjectID],
+	lockers: [{
+		type:		mongoose.Schema.Types.ObjectID,
 		ref: 		'Cabin'
-	}
+	}]
 })
 
 const Locker = mongoose.model('Locker', lockerSchema)

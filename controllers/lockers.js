@@ -58,7 +58,7 @@ const createLocker = function (req, res) {
 }
 
 const getLockers = function (req, res) {
-    Locker.find({}, function (err, lockers) {
+    Locker.find().populate('lockers').then(function (lockers) {
         return res.send(lockers)
     }).catch(function (error) {
         res.status(505).send({ error: error })
@@ -67,7 +67,7 @@ const getLockers = function (req, res) {
 
 const getLockerByID = function (req, res) {
     const _id = req.params.id
-    Locker.findById(_id).populate('lockers').exec(function (err, locker) {
+    Locker.findById(_id).populate('lockers').then(function (err, locker) {
         if (!locker) {
             return res.status(404).send({ error: `El conjunto de casilleros con id ${_id} no existe` })
         }
@@ -80,7 +80,7 @@ const getLockerByID = function (req, res) {
 const getLockerBySpecs = function (req, res) {
     const _camp = req.query.campus
     const _dress = req.query.dresser
-    Locker.findOne({ campus: _camp, dresser: _dress }).then(function (locker) {
+    Locker.findOne({ campus: _camp, dresser: _dress }).populate('lockers').then(function (locker) {
         if (!locker) {
             return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
         }
@@ -115,7 +115,7 @@ const assignLocker = async function (req, res) {
         return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
     }
     if (user.locker) {
-        return res.status(400).send({ error: 'El usuario con ya cuenta con un casillero' })
+        return res.status(400).send({ error: 'El usuario ya cuenta con un casillero' })
     }
 
     const locker = await Locker.findById(_lockID)
