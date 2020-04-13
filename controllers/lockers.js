@@ -80,115 +80,64 @@ const assignLocker = async function (req, res) {
     const _cnt = locker.count
     var search = true
     for (var i = 0; i < _cnt; i++) {
-        console.log(`Entrando al for ${i}`)
         if (search) {
-            console.log(`Entrando al if ${i}`)
-            var _cabId = locker.lockers[i]
-            console.log(`Cabina ${_cabId}`)
-            var cabin = await Cabin.findById(_cabId)
+            var _cabID = locker.lockers[i]
+            var cabin = await Cabin.findById(_cabID)
+            if (!cabin) {
+                return res.status(404).send({ error: 'No hay casilleros disponibles' })
+            }
             if (cabin.status == 'Disponible') {
-                console.log(`Entrando al segundo if ${i}`)
                 cabin.status = 'Asignado'
                 cabin.assignee = _userID
                 cabin.save().then(function () {
-                    user.locker = _cabId
+                    user.locker = _cabID
                     user.save().then(function () {
                         return res.send(cabin)
                     }).catch(function (error) {
-                        return res.status(505).send({ error: 'Error en save User' })
+                        return res.status(505).send({ error: error })
                     })
                 }).catch(function (error) {
-                    return res.status(505).send({ error: 'Error en save User' })
+                    return res.status(505).send({ error: error })
                 })
                 search = false
             }
         }
     }
-
     if (search) {
         return res.status(404).send({ error: 'No hay casilleros disponibles' })
     }
-
-
-    // const user = User.findById(_userID).then(function(user){
-    // 	if(!user){
-    // 		
-    //     }
-    // 	if(user.locker){
-    // 		
-
-    // const locker = Lockerf
-    // 	Locker.findOne({'dresser': _dress, 'campus': _camp}).then(function(locker){
-    // 		if(!locker){
-    // 			return res.status(404).send({error: 'No hay casilleros con esas especificaciones'})
-    //         }
-    //         console.log(locker)
-    //         const cnt = locker.count
-    //         var i = 0
-    //         var search = true
-    // 		for(i=0; i<cnt; i++){
-    //             console.log(`Entrando al for ${i}`)
-    //             if(search){
-    //                 var _cabID = locker.lockers[i]
-    //                 console.log(_cabID)
-    //                 Cabin.findById(_cabID).then(function(cabin){
-    //                     if(!cabin){
-    //                         return res.status(404).send({error: 'No hay cabinas disponibles'})
-    //                     }
-    //                     if(cabin.status == 'Disponible' && search){
-    //                         console.log(`Entrando al if ${i}`)
-    //                         search = false
-    //                         cabin.assignee = _userID
-    //                         cabin.status = 'Asignado'
-    //                         cabin.save().then(function(){
-    //                             user.locker = cabin._id
-    //                             user.save().then(function(){
-    //                                 return res.send(cabin)
-    //                             }).catch(function(error){
-    //                                 return res.status(505).send({error: 'Error en save User'})
-    //                             })
-    //                         })
-    //                     }
-    //                 })
-    //             }
-    //         }
-    //         if(search){
-    //             return res.status(404).send({error: 'No hay casilleros disponibles'})
-    //             // Agregar a lista de espera
-    //         }
-    // 	}).catch(function(error){
-    // 		return res.status(505).send({error: 'Error en buscar casillero'})
-    // 	})
-    // }).catch(function(error){
-    // 	return res.status(505).send({error: 'Error en buscar usuario'})
-    // })
 }
 
-const unassignLocker = function (req, res) {
-    const _camp = req.body.campus
-    const _dress = req.body.dresser
-    const _lockID = req.params.id
+const unassignLocker = async function (req, res) {
+    const _cabID = req.params.id
     var _userID
     if (req.user) {
         _userID = req.user._id
     } else {
         _userID = req.body.id
     }
-    console.log(_userID)
-    User.findByIdAndUpdate(_userID, { locker: null }).then(function (user) {
-        if (!user) {
-            return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
-        }
-        Locker.findByIdAndUpdate(_lockID, { assignee: null, status: 'Disponible' }).then(function (locker) {
-            if (!locker) {
-                return res.status(404).send({ error: `El casillero con id ${_lockID} no existe.` })
-            }
-            return res.send(locker)
+
+    user = await User.findById(_userID)
+    if (!user) {
+        return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+    }
+
+    cabin = await Cabin.findById(_cabID)
+    if (!cabin) {
+        return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
+    }
+
+    user.locker = null
+    user.save().then(function () {
+        cabin.status = 'Disponible'
+        cabin.assignee = null
+        cabin.save().then(function () {
+            return res.send(cabin)
         }).catch(function (error) {
-            return res.status(505).send({ error: error })
+            res.status(505).send({ error: error })
         })
     }).catch(function (error) {
-        return res.status(505).send({ error: error })
+        res.status(505).send({ error: error })
     })
 }
 
@@ -200,72 +149,80 @@ const unassignLocker = function (req, res) {
 
 //}
 
-const switchStatus = function (req, res) {
-    const _lockID = req.params.id
-    Locker.findById(_lockID).then(function (locker) {
-        if (!locker) {
-            return res.status(404).send({ error: `No se encontró casillero con id ${_lockID}` })
-        }
-        if (locker.status == 'Disponible') {
-            Locker.findByIdAndUpdate(_lockID, { status: 'Deshabilitado' }).then(function (locker) {
-                if (!locker) {
-                    return res.status(404).send({ error: `No se encontró casillero con id ${_lockID}` })
-                }
-                return res.send(locker)
-            }).catch(function (error) {
-                res.status(505).send({ error: error })
-            })
-        }
-        if (locker.status == 'Deshabilitado') {
-            Locker.findByIdAndUpdate(_lockID, { status: 'Disponible' }).then(function (locker) {
-                if (!locker) {
-                    return res.status(404).send({ error: `No se encontró casillero con id ${_lockID}` })
-                }
-                return res.send(locker)
-            }).catch(function (error) {
-                res.status(505).send({ error: error })
-            })
-        }
-        if (locker.status == 'Asignado') {
-            User.findOneAndUpdate({ locker: _lockID }, { locker: null }).then(function (user) {
-                // if(user){
-                if (true) {
-                    Locker.findByIdAndUpdate(_lockID, { status: 'Deshabilitado' }).then(function (locker) {
-                        if (!locker) {
-                            return res.status(404).send({ error: `No se encontró casillero con id ${_lockID}` })
-                        }
-                        return res.send(locker)
+const switchStatus = async function (req, res) {
+    const _cabID = req.params.id
+
+    var cabin = await Cabin.findById(_cabID)
+    if (!cabin) {
+        return res.status(404).send({ error: `No se encontró casillero con id ${_cabID}` })
+    }
+    if (cabin.status == 'Disponible') {
+        cabin.status = 'Deshabilitado'
+        
+    } else{
+        if (cabin.status == 'Deshabilitado') {
+            cabin.status = 'Disponible'
+        } else{
+            if (cabin.status == 'Asignado') {
+                var user = await User.findById(cabin.assignee)
+                if (user) {
+                    // Mandar 
+                    console.log("El casillero tienen un usuario asignado.")
+                    user.locker = null
+                    user.save().then(function () {
+                        cabin.status = 'Disponible'
+                        cabin.assignee = null
                     }).catch(function (error) {
                         res.status(505).send({ error: error })
                     })
-                } // else {}
-            })
-        }
-    })
-}
-
-const deleteLocker = function (req, res) {
-    const _lockID = req.params.id
-    Locker.findByIdAndDelete(_lockID).then(function (locker) {
-        if (!locker) {
-            return res.status(404).send({ error: `No se encontró casillero con id ${_lockID}` })
-        }
-        User.findOneAndUpdate({ locker: _lockID }, { locker: null }).then(function (user) {
-            if (user) {
-                // Mandar correo al usuario
-                console.log('El casillero tiene un usuario asignado')
-                return res.send(locker)
+                } else {
+                    cabin.status = 'Disponible'
+                }
             }
-            return res.send(locker)
-        }).catch(function (error) {
-            res.status(505).send({ error: error })
-        })
+        }
+    }
+    cabin.save().then(function () {
+        return res.send(cabin)
     }).catch(function (error) {
         res.status(505).send({ error: error })
     })
 }
 
+const deleteLocker = async function (req, res) {
+    const _lockID = req.params.id
+    locker = await Locker.findByIdAndDelete(_lockID)
+    if (!locker) {
+        return res.status(404).send({ error: `El conjunto de casilleros con id ${_lockID} no existe` })
+    }
+
+    _cnt = locker.count
+    for (var i = 0; i < _cnt; i++) {
+        var _cabID = locker.lockers[i]
+        var cabin = await Cabin.findByIdAndDelete(_cabID)
+        if (!cabin) {
+            return res.status(404).send({ error: 'No hay casilleros disponibles' })
+        }
+        if(cabin.assignee){
+            var _userID = cabin.assignee
+            user = await User.findById(_userID)
+            if (!user) {
+                return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+            }
+            user.locker = null
+            user.save().then(function(){
+                // Mandar correo al usuario
+                console.log(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID}`)
+            })
+        }
+    }
+
+    return res.send(locker)
+}
+
 module.exports = {
     createLocker: createLocker,
-    assignLocker: assignLocker
+    assignLocker: assignLocker,
+    unassignLocker: unassignLocker,
+    switchStatus: switchStatus,
+    deleteLocker: deleteLocker
 }

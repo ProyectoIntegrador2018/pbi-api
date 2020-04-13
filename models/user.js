@@ -116,7 +116,7 @@ const userSchema = new mongoose.Schema({
 	}],
 	locker:{
 		type: mongoose.Schema.Types.ObjectID,
-		ref: 'Locker'
+		ref: 'Cabin'
 	},
 	password: {
 		type: String,

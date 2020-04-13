@@ -47,9 +47,9 @@ router.delete('/users/:id',auth.authAdmin, users.deleteUser)
 
 router.post('/lockers', auth.authAdmin, lockers.createLocker)
 router.put('/lockers', lockers.assignLocker)
-// router.put('/lockers/:id', lockers.unassignLocker)
-// router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
-// router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
+router.put('/lockers/:id', lockers.unassignLocker)
+router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
+router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
 
 
 router.post('/login', users.login)
@@ -70,7 +70,7 @@ router.get('/user',auth.auth,function(req,res){
 
 router.get('*', function(req, res) {
   res.send({
-    error: 'This route does not exist, try /users or /boards'
+    error: 'This route does not exist'
   })
 })
 
