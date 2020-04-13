@@ -31,7 +31,7 @@ const createLocker = function (req, res) {
             campus: _camp,
             dresser: _dress,
             count: _cnt,
-            cost = _cst,
+            cost: _cst,
             lockers: []
         })
         var i
@@ -39,7 +39,7 @@ const createLocker = function (req, res) {
             var cabin = new Cabin({
                 campus: _camp,
                 dresser: _dress,
-                cost = _cst,
+                cost: _cst,
                 number: i + 1,
                 status: 'Disponible'
             })
@@ -223,8 +223,6 @@ const deleteLocker = async function (req, res) {
 
     return res.send(locker)
 }
-
-
 
 module.exports = {
     createLocker: createLocker,
