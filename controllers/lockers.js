@@ -90,6 +90,17 @@ const getLockerBySpecs = function (req, res) {
     })
 }
 
+const getCabin = function(req, res){
+    const _cabID = req.params.id
+    Cabin.findById(_cabID).then(function(cabin){
+        if (!cabin) {
+            return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
+        }
+        return res.send(cabin)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
 const assignLocker = async function (req, res) {
     const _lockID = req.params.id
     var _userID
@@ -262,6 +273,7 @@ module.exports = {
     getLockers: getLockers,
     getLockerByID: getLockerByID,
     getLockerBySpecs: getLockerBySpecs,
+    getCabin: getCabin,
     assignLocker: assignLocker,
     unassignLocker: unassignLocker,
     switchStatus: switchStatus,
