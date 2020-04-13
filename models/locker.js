@@ -15,6 +15,10 @@ const lockerSchema = new mongoose.Schema({
 		type:		Number,
 		required:	true
 	},
+	cost:{
+		type:		Number,
+		required:	true
+	},
 	lockers: {
 		type:		[mongoose.Schema.Types.ObjectID],
 		ref: 		'Cabin'

@@ -10,6 +10,10 @@ const cabinSchema = new mongoose.Schema({
 		type: 		String,
 		required: 	true
 	},
+	cost:{
+		type:		Number,
+		required:	true
+	},
 	number:{
 		type: 		Number,
 		required: 	true

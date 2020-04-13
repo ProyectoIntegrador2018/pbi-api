@@ -21,6 +21,7 @@ const createLocker = function (req, res) {
     const _camp = req.body.campus
     const _dress = req.body.dresser
     const _cnt = req.body.count
+    const _cst = req.body.cost
 
     Locker.findOne({ 'dresser': _dress, 'campus': _camp }).then(function (locker) {
         if (locker)
@@ -30,6 +31,7 @@ const createLocker = function (req, res) {
             campus: _camp,
             dresser: _dress,
             count: _cnt,
+            cost = _cst,
             lockers: []
         })
         var i
@@ -37,6 +39,7 @@ const createLocker = function (req, res) {
             var cabin = new Cabin({
                 campus: _camp,
                 dresser: _dress,
+                cost = _cst,
                 number: i + 1,
                 status: 'Disponible'
             })
@@ -55,8 +58,7 @@ const createLocker = function (req, res) {
 }
 
 const assignLocker = async function (req, res) {
-    const _camp = req.body.campus
-    const _dress = req.body.dresser
+    const _lockID = req.params.id
     var _userID
     if (req.user) {
         _userID = req.user._id
@@ -72,7 +74,7 @@ const assignLocker = async function (req, res) {
         return res.status(400).send({ error: 'El usuario con ya cuenta con un casillero' })
     }
 
-    const locker = await Locker.findOne({ 'dresser': _dress, 'campus': _camp })
+    const locker = await Locker.findById(_lockID)
     if (!locker) {
         return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
     }
@@ -218,6 +220,8 @@ const deleteLocker = async function (req, res) {
 
     return res.send(locker)
 }
+
+
 
 module.exports = {
     createLocker: createLocker,
