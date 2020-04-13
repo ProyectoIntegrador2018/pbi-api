@@ -57,6 +57,39 @@ const createLocker = function (req, res) {
     })
 }
 
+const getLockers = function (req, res) {
+    Locker.find({}, function (err, lockers) {
+        return res.send(lockers)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const getLockerByID = function (req, res) {
+    const _id = req.params.id
+    Locker.findById(_id).populate('lockers').exec(function (err, locker) {
+        if (!locker) {
+            return res.status(404).send({ error: `El conjunto de casilleros con id ${_id} no existe` })
+        }
+        return res.send(locker)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const getLockerBySpecs = function (req, res) {
+    const _camp = req.body.campus
+    const _dress = req.body.dresser
+    Locker.findOne({ campus: _camp, dresser: _dress }).then(function (locker) {
+        if (!locker) {
+            return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
+        }
+        return res.send(locker)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
 const assignLocker = async function (req, res) {
     const _lockID = req.params.id
     var _userID
@@ -129,7 +162,7 @@ const unassignLocker = async function (req, res) {
         return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
     }
 
-    if(user._id != cabin.assignee){
+    if (user._id != cabin.assignee) {
         return res.status(400).send({ error: `El casillero no pertenece al usuario que desea desasignarse` })
     }
     user.locker = null
@@ -163,11 +196,11 @@ const switchStatus = async function (req, res) {
     }
     if (cabin.status == 'Disponible') {
         cabin.status = 'Deshabilitado'
-        
-    } else{
+
+    } else {
         if (cabin.status == 'Deshabilitado') {
             cabin.status = 'Disponible'
-        } else{
+        } else {
             if (cabin.status == 'Asignado') {
                 var user = await User.findById(cabin.assignee)
                 if (user) {
@@ -207,14 +240,14 @@ const deleteLocker = async function (req, res) {
         if (!cabin) {
             return res.status(404).send({ error: 'No hay casilleros disponibles' })
         }
-        if(cabin.assignee){
+        if (cabin.assignee) {
             var _userID = cabin.assignee
             user = await User.findById(_userID)
             if (!user) {
                 return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
             }
             user.locker = null
-            user.save().then(function(){
+            user.save().then(function () {
                 // Mandar correo al usuario
                 console.log(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID}`)
             })
@@ -226,6 +259,9 @@ const deleteLocker = async function (req, res) {
 
 module.exports = {
     createLocker: createLocker,
+    getLockers: getLockers,
+    getLockerByID: getLockerByID,
+    getLockerBySpecs: getLockerBySpecs,
     assignLocker: assignLocker,
     unassignLocker: unassignLocker,
     switchStatus: switchStatus,

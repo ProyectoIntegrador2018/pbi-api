@@ -46,8 +46,11 @@ router.put('/admin/users/:id',auth.authAdmin, users.updateUserByAdmin)
 router.delete('/users/:id',auth.authAdmin, users.deleteUser)
 
 router.post('/lockers', auth.authAdmin, lockers.createLocker)
-router.put('/lockers/assign/:id', lockers.assignLocker)
-router.put('/lockers/unassign/:id', lockers.unassignLocker)
+router.get('/lockers', auth.authAdmin, lockers.getLockers)
+router.get('/lockers/:id', auth.authAdmin, lockers.getLockerByID)
+router.get('/lockers/search/', auth.authAdmin, lockers.getLockerBySpecs)
+router.put('/lockers/assign/:id',auth.auth, lockers.assignLocker)
+router.put('/lockers/unassign/:id',auth.auth, lockers.unassignLocker)
 router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
 router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
 
