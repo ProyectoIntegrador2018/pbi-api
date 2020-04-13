@@ -78,8 +78,8 @@ const getLockerByID = function (req, res) {
 }
 
 const getLockerBySpecs = function (req, res) {
-    const _camp = req.body.campus
-    const _dress = req.body.dresser
+    const _camp = req.query.campus
+    const _dress = req.query.dresser
     Locker.findOne({ campus: _camp, dresser: _dress }).then(function (locker) {
         if (!locker) {
             return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
