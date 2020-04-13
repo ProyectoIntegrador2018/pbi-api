@@ -172,8 +172,7 @@ const unassignLocker = async function (req, res) {
     if (!cabin) {
         return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
     }
-
-    if (user._id != cabin.assignee) {
+    if (String(user._id) != String(cabin.assignee)) {
         return res.status(400).send({ error: `El casillero no pertenece al usuario que desea desasignarse` })
     }
     user.locker = null
