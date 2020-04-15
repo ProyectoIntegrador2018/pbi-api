@@ -121,7 +121,7 @@ const getTermClasses = function(req,res){
 const updateTerm = function(req,res){
     const _id = req.params.id
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['name','year','startInscriptions','closeInscriptions']
+    const allowedUpdates = ['name','year','startInscriptions','closeInscriptions', 'startLockerReservations', 'closeLockerReservations']
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
 
     if( !isValidUpdate ) {
