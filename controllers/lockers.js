@@ -67,7 +67,7 @@ const getLockers = function (req, res) {
 
 const getLockerByID = function (req, res) {
     const _id = req.params.id
-    Locker.findById(_id).populate('lockers').then(function (err, locker) {
+    Locker.findById(_id).populate('lockers').then(function (locker) {
         if (!locker) {
             return res.status(404).send({ error: `El conjunto de casilleros con id ${_id} no existe` })
         }
@@ -90,9 +90,9 @@ const getLockerBySpecs = function (req, res) {
     })
 }
 
-const getCabin = function(req, res){
+const getCabin = function (req, res) {
     const _cabID = req.params.id
-    Cabin.findById(_cabID).then(function(cabin){
+    Cabin.findById(_cabID).then(function (cabin) {
         if (!cabin) {
             return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
         }
@@ -101,6 +101,109 @@ const getCabin = function(req, res){
         res.status(505).send({ error: error })
     })
 }
+
+const changeCost = async function (req, res) {
+    const _lockID = req.params.id
+    const _cst = req.body.cost
+
+    var locker = await Locker.findByIdAndUpdate(_lockID, { cost: _cst })
+    if (!locker) {
+        return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
+    }
+
+    for (var i = 0; i < locker.count; i++) {
+        var cabin = await Cabin.findByIdAndUpdate(locker[i], { cost: _cst })
+        if (!cabin) {
+            return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
+        }
+        cabin.save().then(function () {
+            console.log(cabin)
+        }).catch(function (error) {
+            res.status(505).send({ error: error })
+        })
+    }
+    locker.save().then(function () {
+        req.send(locker)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const addCabins = async function (req, res) {
+    const _lockID = req.params.id
+    const _add = req.body.add
+
+    var locker = await Locker.findByIdAndUpdate(_lockID, { $inc: { count: _add } })
+    if (!locker) {
+        return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
+    }
+
+    const _curr = locker.count
+    const _camp = locker.campus
+    const _dress = locker.dresser
+    const _cst = locker.cost
+
+    for (var i = 0; i < _add; i++) {
+        const cabin = new Cabin({
+            campus: _camp,
+            dresser: _dress,
+            cost: _cst,
+            number: _curr + i + 1,
+            status: 'Disponible',
+            assignee: null
+        })
+        cabin.save().then(function () {
+            console.log(cabin)
+        }).catch(function (error) {
+            res.status(505).send({ error: error })
+        })
+        locker.lockers.push(cabin._id)
+    }
+    locker.save().then(function () {
+        return res.send(locker)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const removeCabins = async function (req, res) {
+    const _lockID = req.params.id
+    const _subs = req.body.substract
+
+    var locker = await Locker.findByIdAndUpdate(_lockID, { $inc: { count: -_subs } })
+    if (!locker) {
+        return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
+    }
+
+    const _curr = locker.count
+
+    for (var i = _curr - 1; i >= _curr - _subs; i--) {
+        var _cabID = locker.lockers.pop()
+        var cabin = await Cabin.findByIdAndDelete(_cabID)
+        if (!cabin) {
+            return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
+        }
+        if (cabin.assignee) {
+            var _userID = cabin.assignee
+            var user = await User.findById(_userID)
+            if (!user) {
+                return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+            }
+            // Mandar correo confirmacion
+            user.locker = null
+            user.save().then(function () {
+                console.log(`El casillero tiene un usuario asignado`)
+            })
+        }
+
+    }
+    locker.save().then(function () {
+        return res.send(locker)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
 const assignLocker = async function (req, res) {
     const _lockID = req.params.id
     var _userID
@@ -273,6 +376,9 @@ module.exports = {
     getLockerByID: getLockerByID,
     getLockerBySpecs: getLockerBySpecs,
     getCabin: getCabin,
+    changeCost: changeCost,
+    addCabins: addCabins,
+    removeCabins: removeCabins,
     assignLocker: assignLocker,
     unassignLocker: unassignLocker,
     switchStatus: switchStatus,

@@ -4,14 +4,17 @@ var moment = require('moment-timezone');
 moment.tz.setDefault("America/Monterrey");
 
 const createTerm = function(req, res){
-    const _id = req.params.id
-    var startDate= new Date(req.body.startInscriptions)
-    var closeDate = new Date(req.body.closeInscriptions)
+    var inscStartDate = new Date(req.body.startInscriptions)
+    var inscCloseDate = new Date(req.body.closeInscriptions)
+    var lockStartDate = new Date(req.body.startLockerReservations)
+    var lockCloseDate = new Date(req.body.closeLockerReservations)
     const term = new Term({
         name: req.body.name,
         year: req.body.year,
-        startInscriptions: startDate,
-        closeInscriptions: closeDate,
+        startInscriptions: inscStartDate,
+        closeInscriptions: inscCloseDate,
+        startLockerReservations: lockStartDate,
+        closeLockerReservations: lockCloseDate,
         classes: []
     })
     term.save().then(function(){

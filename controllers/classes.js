@@ -294,6 +294,74 @@ const getUserClasses = function(req,res){
     })
 }
 
+const addAttendance = async function(req, res){
+    const _classID = req.params.id
+    const _date = req.body.date
+    var course = await Class.findById(_classID)
+    if(!course){
+        return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
+    }
+    
+    dates = course.attendance
+    var exists = false
+    for(const day in dates){
+        if(day.date == _date){
+            exists = true
+        }
+    }
+    if(exists){
+        return res.status(400).send({error : `La fecha ${_date} ya existe en la lista de asistencia`})
+    } else{
+        var _enrolled = []
+        for(student in course.enrolled){
+            var user = await User.findById(student)
+            if(!user){
+                return res.status(404).send({ error : `El usuario con id ${_userID} no existee`})
+            }
+            var ind = -1
+            for(var i=0; i<user.attendance.length; i++){
+                if(user.attendance[i].class == student){
+                    ind = i
+                }
+            }
+            if(ind == -1){
+                return res.status(400).send({ error : `El usuario con id ${_userID} parece no estar inscrito en la clase`})
+            }
+            const _ret = user.attendance[ind].retired
+            _enrolled.push({
+                attendee: student,
+                retired: _ret,
+                assisted: false
+            })
+            user.attendance[ind].record.push({
+                date: _date,
+                assistance: false
+            })
+            user.save().then(function(){
+                console.log(user)
+            }).catch(function(error){
+                res.status(505).send({ error: error })
+            })
+        }
+        course.attendance.push({
+            date: _date,
+            attendees: _enrolled
+        })
+        course.save().then(function(){
+            return res.send(course)
+        }).catch(function(error){
+            res.status(505).send({ error: error })
+        })
+    }
+}
+
+// const modifyAttendance = function(req, res){
+//     _classID = req.params.id
+//     _userID = req.body.id
+//     _date = req.body.date
+
+// }
+
 module.exports = {
     createClass : createClass,
     updateClass : updateClass,
@@ -305,7 +373,8 @@ module.exports = {
     enrollByPayroll : enrollByPayroll,
     disenrollUser : disenrollUser,
     disenrollUserByAdmin : disenrollUserByAdmin,
-    getUserClasses : getUserClasses
+    getUserClasses : getUserClasses,
+    addAttendance : addAttendance
 }
 
 
