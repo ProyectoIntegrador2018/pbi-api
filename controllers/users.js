@@ -80,7 +80,6 @@ const logout = function(req, res) {
     })
 }
 
-
 const updateUser = function(req, res) {
     const _id = req.user._id
     const updates = Object.keys(req.body)
@@ -264,6 +263,27 @@ const validateSession = function(req,res){
   })
 }
 
+const getAttendance = function(req, res){
+    const _classID = req.params.id
+    var _userID
+    if (req.user) {
+        _userID = req.user.id
+    } else {
+        _userID = req.query.id
+    }
+    User.findById(_userID).then(function(user){
+        if (!user) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+        }
+        for (const course in user.attendance){
+            if(course == _classID){
+                return res.send(course)
+            }
+        }
+        return res.status(404).send({error: `El usuario no está registrado en el curso con id ${_classID}`})
+    })
+}
+
 module.exports = {
     getUsers : getUsers,
     getUser : getUser,
@@ -280,7 +300,8 @@ module.exports = {
     requestResetPassword : requestResetPassword,
     resetPassword : resetPassword,
     getUserOnResetP : getUserOnResetP,
-    validateSession:validateSession
+    validateSession:validateSession,
+    getAttendance : getAttendance
 }
 
 

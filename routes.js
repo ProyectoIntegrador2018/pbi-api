@@ -8,6 +8,7 @@ const users = require('./controllers/users.js')
 const terms = require('./controllers/terms.js')
 const classes = require('./controllers/classes.js')
 const lockers = require('./controllers/lockers.js')
+const professors = require('./controllers/professors.js')
 
 router.all('*', cors())
 
@@ -44,6 +45,7 @@ router.put('/users/medicalRecord', auth.auth, users.fillMedicalRecord)
 router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRecordAdmin)
 router.put('/admin/users/:id',auth.authAdmin, users.updateUserByAdmin)
 router.delete('/users/:id',auth.authAdmin, users.deleteUser)
+router.get('/users/attendance/:id', auth.auth, users.getAttendance)
 
 router.post('/lockers', auth.authAdmin, lockers.createLocker)
 router.get('/lockers', lockers.getLockers)
@@ -55,6 +57,11 @@ router.put('/lockers/unassign/:id',auth.auth, lockers.unassignLocker)
 router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
 router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
 
+router.post('/professors', auth.authAdmin, professors.createProfessor)
+router.get('/professors', professors.getProfessors)
+router.get('/professors/:id', professors.getProfessor)
+router.put('/professors/:id', professors.updateProfessor)
+router.delete('/professors/:id', professors.deleteProfessor)
 
 router.post('/login', users.login)
 router.post('/logout',auth.auth,users.logout)

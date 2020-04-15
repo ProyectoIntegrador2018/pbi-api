@@ -22,6 +22,14 @@ const termSchema = new mongoose.Schema({
 		type: Date,
 		required: true
 	},
+	startLockerReservations:{
+		type: Date,
+		required: true
+	},
+	closeLockerReservations:{
+		type: Date,
+		required: true
+	},
 	flagCurrent:{
 		type: Boolean,
 		default: false
