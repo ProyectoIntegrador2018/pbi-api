@@ -7,7 +7,8 @@ const auth = require("./middleware/auth.js")
 const users = require('./controllers/users.js')
 const terms = require('./controllers/terms.js')
 const classes = require('./controllers/classes.js')
-const clinicalRecords = require('./controllers/clinicalRecords.js')
+const lockers = require('./controllers/lockers.js')
+const professors = require('./controllers/professors.js')
 
 router.all('*', cors())
 
@@ -32,6 +33,8 @@ router.post('/classesMass/:id',auth.authAdmin, classes.createClasses)
 router.get('/classes/', classes.getClasses)
 router.get('/classes/:id', classes.getClassByID)
 router.delete('/classes/:id', auth.authAdmin,classes.deleteClass)
+// router.put('/classes/attendance/add/:id', classes.addAttendance)
+// router.put('/classes/attendance/mark/:id', classes.markAttendance)
 
 router.put('/classes/enroll/:id',auth.authAdmin, classes.enrollUser)
 router.put('/classes/enrollPayroll/user/:id', auth.auth,classes.enrollUser)
@@ -44,6 +47,26 @@ router.put('/users/medicalRecord', auth.auth, users.fillMedicalRecord)
 router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRecordAdmin)
 router.put('/admin/users/:id',auth.authAdmin, users.updateUserByAdmin)
 router.delete('/users/:id',auth.authAdmin, users.deleteUser)
+router.get('/users/attendance/:id', auth.auth, users.getAttendance)
+
+router.post('/lockers', auth.authAdmin, lockers.createLocker)
+router.get('/lockers', lockers.getLockers)
+router.get('/lockers/search/', lockers.getLockerBySpecs)
+router.get('/lockers/locker/:id', lockers.getCabin)
+router.get('/lockers/:id', lockers.getLockerByID)
+router.put('/lockers/assign/:id',auth.auth, lockers.assignLocker)
+router.put('/lockers/unassign/:id',auth.auth, lockers.unassignLocker)
+router.put('/lockers/status/:id', auth.authAdmin, lockers.switchStatus)
+router.put('/lockers/cost/:id', lockers.changeCost)
+router.put('/lockers/add/:id', lockers.addCabins)
+router.put('/lockers/remove/:id', lockers.removeCabins)
+router.delete('/lockers/:id', auth.authAdmin, lockers.deleteLocker)
+
+router.post('/professors', auth.authAdmin, professors.createProfessor)
+router.get('/professors', professors.getProfessors)
+router.get('/professors/:id', professors.getProfessor)
+router.put('/professors/:id', professors.updateProfessor)
+router.delete('/professors/:id', professors.deleteProfessor)
 
 router.post('/login', users.login)
 router.post('/logout',auth.auth,users.logout)
@@ -63,7 +86,7 @@ router.get('/user',auth.auth,function(req,res){
 
 router.get('*', function(req, res) {
   res.send({
-    error: 'This route does not exist, try /users or /boards'
+    error: 'This route does not exist'
   })
 })
 

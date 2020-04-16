@@ -294,6 +294,138 @@ const getUserClasses = function(req,res){
     })
 }
 
+const addAttendance = async function(req, res){
+    const _classID = req.params.id
+    const _date = new Date(req.body.date)
+    var course = await Class.findById(_classID)
+    if(!course){
+        return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
+    }
+    
+    dates = course.attendance
+    var exists = false
+    for(const day in dates){
+        if(day.date == _date){
+            exists = true
+        }
+    }
+    if(exists){
+        return res.status(400).send({error : `La fecha ${_date} ya existe en la lista de asistencia`})
+    } else{
+        var _enrolled = []
+        for(var i=0; i<course.enrolled.length; i++){
+            var _userID = course.enrolled[i]
+            console.log(_userID)
+            var user = await User.findById(_userID)
+            if(!user){
+                return res.status(404).send({ error : `El usuario con id ${_userID} no existee`})
+            }
+            var ind = -1
+            for(var j=0; j<user.attendance.length; j++){
+                console.log(user.attendance[j].class + '-' + _classID)
+                if(user.attendance[j].class == _classID){
+                    ind = j
+                }
+            }
+            if(ind == -1){
+                return res.status(400).send({ error : `El usuario con id ${_userID} parece no estar inscrito en la clase`})
+            }
+            const _ret = user.attendance[ind].retired
+            _enrolled.push({
+                attendee: _userID,
+                retired: _ret,
+                assisted: false
+            })
+            user.attendance[ind].record.push({
+                date: _date,
+                assistance: false
+            })
+            user.save().then(function(){
+                console.log(user)
+            }).catch(function(error){
+                res.status(505).send({ error: error })
+            })
+        }
+        course.attendance.push({
+            date: _date,
+            attendees: _enrolled
+        })
+        course.save().then(function(){
+            return res.send(course)
+        }).catch(function(error){
+            res.status(505).send({ error: error })
+        })
+    }
+}
+
+const markAttendance = async function(req, res){
+    const _classID = req.params.id
+    const _userID = req.body.user
+    const _date = new Date(req.body.date)
+
+    var course = await Class.findById(_classID)
+    if(!course){
+        return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
+    }
+    var indDate = -1
+    var dates = course.attendance
+    for(var i= 0; i<dates.length;i++){
+        if(dates[i].date == _date){
+            indDate = i
+        }
+    }
+    if(indDate == -1){
+        return res.status(404).send({ error : `La clase con id ${_classID} no tiene registro para el ${_date}`})
+    }
+
+    var user = await User.findById(_userID)
+    if(!user){
+        return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
+    }
+    var indUser = -1
+    var record = dates[indDate].attendees
+    for(var i=0; i<record.length; i++){
+        if(record[i].attendee == _userID){
+            indUser = i
+        }
+    }
+    if(indUser == -1){
+        return res.status(404).send({ error : `El usuario con id ${_userID} no tiene registro para la fecha ${_date}`})
+    }
+
+    course.attendance[indDate].attendees[indUser].assisted = !course.attendance[indDate].attendees[indUser].assisted
+    course.save().then(function(){
+        var indCourse = -1
+        var userCourses = user.attendance
+        for(var i=0; i<userCourses.length; i++){
+            if(userCourses[i].class == _classID){
+                indCourse = i
+            }
+        }
+        if(indUser == -1){
+            return res.status(404).send({ error : `El usuario con id ${_userID} tiene registro de la clase ${_classID}`})
+        }
+        var indDay = -1
+        var days = user.attendance[indCourse].record
+        for(var i=0; i<days.length; i++){
+            if(days[i].date == _date){
+                indDay = i
+            }
+        }
+        if(indDay == -1){
+            return res.status(404).send({ error : `El usuario con id ${_userID} no tiene registro para la fecha ${_date}`})
+        }
+        user.attendance[indCourse].record[indDay].assistance = !user.attendance[indCourse].record[indDay].assistance
+        user.save().then(function(){
+            return res.send(course)
+        }).catch(function(error){
+            res.status(505).send({ error: error })
+        })
+    }).catch(function(error){
+        res.status(505).send({ error: error })
+    })
+}
+
 module.exports = {
     createClass : createClass,
     updateClass : updateClass,
@@ -305,7 +437,9 @@ module.exports = {
     enrollByPayroll : enrollByPayroll,
     disenrollUser : disenrollUser,
     disenrollUserByAdmin : disenrollUserByAdmin,
-    getUserClasses : getUserClasses
+    getUserClasses : getUserClasses,
+    addAttendance : addAttendance,
+    markAttendance : markAttendance
 }
 
 
