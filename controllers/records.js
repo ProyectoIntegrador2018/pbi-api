@@ -35,12 +35,35 @@ const getRecord = function(req,res){
     })
 }
 
+const editRecord = function(req,res){
+    const _id = req.params.id
+    Record.findByIdAndUpdate(_id,req.body).then((record)=>{
+        if(!record){
+            return res.status(400).send()
+        }
+        return res.send(record)
+    }).catch((error)=>{
+        return res.status(500).send({error:error})
+    })
+}
 
+const deleteRecord = function(req,res){
+    const _id = req.params.id
+    Record.findByIdAndDelete(_id).then((record)=>{
+        if(!record){
+            return res.status(400).send({error:"No se encontró el expediente especificado"})
+        }
+        return res.send(record)
+    }).catch((error)=>{
+        return res.status(500).send({error:error})
+    })
+}
 
 module.exports = {
     createRecord: createRecord,
     createRecordHistory: createRecordHistory,
     getRecords: getRecords,
     getRecord: getRecord,
-
+    editRecord: editRecord,
+    deleteRecord: deleteRecord,
 }
