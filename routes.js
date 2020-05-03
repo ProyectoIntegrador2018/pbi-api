@@ -9,6 +9,7 @@ const terms = require('./controllers/terms.js')
 const classes = require('./controllers/classes.js')
 const lockers = require('./controllers/lockers.js')
 const professors = require('./controllers/professors.js')
+const records = require('./controllers/records.js')
 
 router.all('*', cors())
 
@@ -83,6 +84,14 @@ router.get('/user',auth.auth,function(req,res){
   res.send(req.user)
 })
 
+////RUTAS NUTRICIÓN////
+//Rutas para Records/Expediente
+router.post('/records',records.createRecord)
+router.post('/records/history/:id',records.createRecordHistory)
+router.get('/records',records.getRecords)
+router.get('/records/:id',records.getRecord)
+router.put('/records/:id', records.editRecord)
+router.delete('/records/:id', records.deleteRecord)
 
 router.get('*', function(req, res) {
   res.send({
