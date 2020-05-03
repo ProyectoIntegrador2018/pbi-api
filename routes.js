@@ -10,6 +10,7 @@ const classes = require('./controllers/classes.js')
 const lockers = require('./controllers/lockers.js')
 const professors = require('./controllers/professors.js')
 const records = require('./controllers/records.js')
+const nutritionists = require('./controllers/nutritionists.js')
 
 router.all('*', cors())
 
@@ -85,13 +86,20 @@ router.get('/user',auth.auth,function(req,res){
 })
 
 ////RUTAS NUTRICIÓN////
-//Rutas para Records/Expediente
-router.post('/records',records.createRecord)
-router.post('/records/history/:id',records.createRecordHistory)
-router.get('/records',records.getRecords)
-router.get('/records/:id',records.getRecord)
-router.put('/records/:id', records.editRecord)
-router.delete('/records/:id', records.deleteRecord)
+router.post('/nutricion/nutritionist', nutritionists.createNutritionist)
+router.get('/nutricion/nutritionists', nutritionists.getNutritionists)
+router.get('/nutricion/nutritionist/:id', nutritionists.getNutritionist)
+// router.post('/nutricion/password/:id', auth.authAdmin, nutritionists.changePassword)
+router.post('/nutricion/login', nutritionists.login)
+router.post('/nutricion/logout', auth.authNutri, nutritionists.logout)
+router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
+
+router.post('/nutricion/records',records.createRecord)
+router.post('/nutricion/records/history/:id',records.createRecordHistory)
+router.get('/nutricion/records',records.getRecords)
+router.get('/nutricion/records/:id',records.getRecord)
+router.put('/nutricion/records/:id', records.editRecord)
+router.delete('/nutricion/records/:id', records.deleteRecord)
 
 router.get('*', function(req, res) {
   res.send({
