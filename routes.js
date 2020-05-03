@@ -9,6 +9,7 @@ const terms = require('./controllers/terms.js')
 const classes = require('./controllers/classes.js')
 const lockers = require('./controllers/lockers.js')
 const professors = require('./controllers/professors.js')
+const records = require('./controllers/records.js')
 
 router.all('*', cors())
 
