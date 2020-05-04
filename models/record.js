@@ -29,6 +29,12 @@ const recordSchema = new mongoose.Schema({
 			}
 		}
     },
+    size:{
+        type:       String,
+    },
+    program:{
+        type:       String,
+    },
     mayorArea:{
         type:       String,
         required:   true
@@ -37,7 +43,7 @@ const recordSchema = new mongoose.Schema({
         type:       String,
         required:   true
     },
-    pacientType:{
+    patientType:{
         type:       String,
         required:   true
     },
