@@ -115,6 +115,16 @@ const deleteNutritionist = async function (req, res) {
     return res.send(nutritionist)
 }
 
+const validateSession = function(req,res){
+    const token = req.query.token
+    User.validateToken(token).then(function(data){
+      return res.send(data)
+    }).catch(function(){
+      return res.send(false)
+    })
+  }
+  
+
 module.exports = {
     createNutritionist: createNutritionist,
     getNutritionists: getNutritionists,
@@ -122,5 +132,6 @@ module.exports = {
     // changePassword:changePassword,
     login: login,
     logout: logout,
-    deleteNutritionist: deleteNutritionist
+    deleteNutritionist: deleteNutritionist,
+    validateSession:validateSession
 }

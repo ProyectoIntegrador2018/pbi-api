@@ -41,7 +41,7 @@ const appointmentSchema = new mongoose.Schema({
         type: Number
     },
     visceralFat:{
-        type: String
+        type: Number
     },
     waist:{
         type: Number

@@ -110,7 +110,7 @@ const recordSchema = new mongoose.Schema({
             glucose:{
                 type:       String
             }
-        },
+        }},
         dayReminder:[{
             fruit:{
                 type:   Number
@@ -149,7 +149,11 @@ const recordSchema = new mongoose.Schema({
                 type:   Number
             }
         }]
-    }
+    ,
+    appointments:[{
+        type: mongoose.Schema.Types.ObjectId,
+        refs: "appointments"
+    }]
 })
 
 const Record = mongoose.model('Record', recordSchema)

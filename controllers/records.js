@@ -59,6 +59,24 @@ const deleteRecord = function(req,res){
     })
 }
 
+const addReminder = function(req,res){
+    const id = req.params.id
+    Record.findById(id).then((record)=>{
+        if(!record){
+            return res.status(400).send({"error":"No es encontró el registro"})
+        }
+        record["dayReminder"] = req.body
+        console.log(record)
+        record.save().then((saved)=>{
+            return res.send(saved)
+        }).catch(()=>{
+            return res.status(500).send({error:"No se pudo actualizar la información"})
+        })
+    }).catch(()=>{
+        return res.status(500).send({error:"Hubo un error al gardar los datos"})
+    })
+}
+
 module.exports = {
     createRecord: createRecord,
     createRecordHistory: createRecordHistory,
@@ -66,4 +84,5 @@ module.exports = {
     getRecord: getRecord,
     editRecord: editRecord,
     deleteRecord: deleteRecord,
+    addReminder: addReminder
 }
