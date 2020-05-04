@@ -11,6 +11,7 @@ const lockers = require('./controllers/lockers.js')
 const professors = require('./controllers/professors.js')
 const records = require('./controllers/records.js')
 const nutritionists = require('./controllers/nutritionists.js')
+const appointment = require('./controllers/appointments.js')
 
 router.all('*', cors())
 
@@ -96,10 +97,19 @@ router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
 
 router.post('/nutricion/records',records.createRecord)
 router.post('/nutricion/records/history/:id',records.createRecordHistory)
+router.post('/nutricion/record/reminder/:id',records.addReminder)
 router.get('/nutricion/records',records.getRecords)
 router.get('/nutricion/records/:id',records.getRecord)
 router.put('/nutricion/records/:id', records.editRecord)
 router.delete('/nutricion/records/:id', records.deleteRecord)
+
+router.get('/nutricion/validate',nutritionists.validateSession)
+
+router.post('/nutricion/appointment/:id', appointment.createAppointment)
+router.get('/nutricion/appointment/:id',appointment.getAppointment)
+router.get('/nutricion/appointments/:id',appointment.getAppointments)
+router.delete('/nutricion/appointment/:id',appointment.deleteAppointment)
+router.put('/nutrcion/appointment/:id',appointment.updateAppointment)
 
 router.get('*', function(req, res) {
   res.send({
