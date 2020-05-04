@@ -7,6 +7,10 @@ const recordSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    nutritionist:{
+        type:       mongoose.Schema.Types.ObjectID,
+        ref:        'Nutritionist'
+    },
     name:{
         type:       String,
         required:   true
@@ -113,40 +117,52 @@ const recordSchema = new mongoose.Schema({
         },
         dayReminder:[{
             fruit:{
-                type:   Number
+                type:       Number,
+                default:    0
             },
             vegetable:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             legume:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             cereal:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             sugar:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             fat:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             milkWhole:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             milkSemiSkimmed:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             milkSkimmed:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             meatWhole:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             meatSemiGreasy:{
-                type:   Number
+                type:   Number,
+                default:    0
             },
             meatGreasy:{
-                type:   Number
+                type:   Number,
+                default:    0
             }
         }]
     }
