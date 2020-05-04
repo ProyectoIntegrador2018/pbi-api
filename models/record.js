@@ -84,6 +84,12 @@ const recordSchema = new mongoose.Schema({
             },
             drinkType:{
                 type: String
+            },
+            drinkQuantity:{
+                type: Number,
+            },
+            drinkFrequency:{
+                type: Number
             }
         },
         diet:{
