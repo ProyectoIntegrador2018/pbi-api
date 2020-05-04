@@ -117,7 +117,7 @@ const deleteNutritionist = async function (req, res) {
 
 const validateSession = function(req,res){
     const token = req.query.token
-    User.validateToken(token).then(function(data){
+    Nutritionist.validateToken(token).then(function(data){
       return res.send(data)
     }).catch(function(){
       return res.send(false)
