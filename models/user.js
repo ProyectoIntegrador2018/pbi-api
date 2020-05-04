@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
 	},
 	surename:{
 		type:		String,
-		require:	true,
+		required:	true,
 	},
 	nomina:{
 		type:		String,
