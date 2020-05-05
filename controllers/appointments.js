@@ -15,6 +15,8 @@ const createAppointment = function(req,res){
         }).catch(_=>{
             return res.status(500).send({error:"No se pudo guardar la cita"})
         })
+    }).catch(_=>{
+        return res.status(500).send({error:"No se pudo guardar la cita. Revisa los campos"})
     })
 }
 
