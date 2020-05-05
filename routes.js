@@ -11,6 +11,10 @@ const lockers = require('./controllers/lockers.js')
 const professors = require('./controllers/professors.js')
 const records = require('./controllers/records.js')
 const nutritionists = require('./controllers/nutritionists.js')
+<<<<<<< HEAD
+=======
+const appointment = require('./controllers/appointments.js')
+>>>>>>> 617f0ebb59be9eeefac23c956ad756a5bb9d014d
 
 router.all('*', cors())
 
@@ -96,10 +100,25 @@ router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
 
 router.post('/nutricion/records',records.createRecord)
 router.post('/nutricion/records/history/:id',records.createRecordHistory)
+<<<<<<< HEAD
+=======
+router.post('/nutricion/record/reminder/:id',records.addReminder)
+>>>>>>> 617f0ebb59be9eeefac23c956ad756a5bb9d014d
 router.get('/nutricion/records',records.getRecords)
 router.get('/nutricion/records/:id',records.getRecord)
 router.put('/nutricion/records/:id', records.editRecord)
 router.delete('/nutricion/records/:id', records.deleteRecord)
+<<<<<<< HEAD
+=======
+
+router.get('/nutricion/validate',nutritionists.validateSession)
+
+router.post('/nutricion/appointment/:id', appointment.createAppointment)
+router.get('/nutricion/appointment/:id',appointment.getAppointment)
+router.get('/nutricion/appointments/:id',appointment.getAppointments)
+router.delete('/nutricion/appointment/:id',appointment.deleteAppointment)
+router.put('/nutrcion/appointment/:id',appointment.updateAppointment)
+>>>>>>> 617f0ebb59be9eeefac23c956ad756a5bb9d014d
 
 router.get('*', function(req, res) {
   res.send({
