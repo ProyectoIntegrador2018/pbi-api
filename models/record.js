@@ -70,14 +70,14 @@ const recordSchema = new mongoose.Schema({
             type: [String]
         },
         lifestyle:{
-            physicalActivitiy:{
+            physicalActivity:{
                 type:   String
             },
-            duration:{//En minutos
+            duration:{//Número decimal Ej. 2.15 = 2 horas y 15 min
                 type: Number
             },
             frequency:{
-                type: String
+                type: Number
             },
             sleepHours:{
                 type: Number
@@ -95,18 +95,18 @@ const recordSchema = new mongoose.Schema({
                 type: Number,
             },
             drinkFrequency:{
-                type: Number
+                type: String
             }
         },
         diet:{
-            suplementConsumer:{
+            supplementConsumer:{
                 type: Boolean
             },
-            sumplementName:{
+            supplementName:{
                 type: String
             },
             controlledMethod:{
-                type: String
+                type: [String]
             },
         },
         comments:{
