@@ -9,10 +9,12 @@ const createAppointment = function(req,res){
             record.appointments.push(appointment._id)
             record.save().then(()=>{
                 return res.send({record:record,appointment:appointment})
-            }).catch(()=>{
+            }).catch((error)=>{
+                console.log(error)
                 return res.status(400).send({error:"Hubo un error, intentalo de nuevo"})
             })
-        }).catch(_=>{
+        }).catch(error=>{
+            
             return res.status(500).send({error:"No se pudo guardar la cita"})
         })
     })
