@@ -30,7 +30,7 @@ const getRecord = function(req,res){
     const recordID = req.params.id
     Record.findById(recordID).then((record)=>{
         return res.send(record)
-    }).then((error)=>{
+    }).catch((error)=>{
         return res.status(500).send(error)
     })
 }
