@@ -1,9 +1,26 @@
 const Record = require("../models/record")
+const Nutritionist = require("../models/nutritionist")
 
-const createRecord = function(req,res){
+const createRecord = async function(req,res){
+    var _nutrID
+    if (req.nutritionist){
+        _nutrID = req.nutritionist._id
+    } else{
+        _nutrID = req.body.id
+    }
+    var nutritionist = await Nutritionist.findById(_nutrID)
+    if (!nutritionist) {
+        return res.status(404).send({ error: `El nutriólogo con id ${_id} no existe` })
+    }
+    req.body.nutritionist = _nutrID
     const record = new Record(req.body)
+    
     record.save().then(()=>{
-        return res.send(record)
+        nutritionist.records.push(record)
+        nutritionist.save().then(()=>{
+            console.log(nutritionist)
+            return res.send(record)
+        })
     })
 }
 
@@ -17,7 +34,7 @@ const createRecordHistory = function(req,res){
        
     })
 }
-
+    
 const getRecords = function(req, res){
     Record.find({}).then(function(records){
         return res.send(records)

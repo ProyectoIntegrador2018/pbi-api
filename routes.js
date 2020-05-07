@@ -12,6 +12,7 @@ const professors = require('./controllers/professors.js')
 const records = require('./controllers/records.js')
 const nutritionists = require('./controllers/nutritionists.js')
 const appointment = require('./controllers/appointments.js')
+const logout = require('./controllers/logout.js')
 
 router.all('*', cors())
 
@@ -85,6 +86,8 @@ router.get('/validate',users.validateSession)
 router.get('/user',auth.auth,function(req,res){
   res.send(req.user)
 })
+
+// router.post('/logout', auth.authDual, logout.logout)
 
 ////RUTAS NUTRICIÓN////
 router.post('/nutricion/nutritionist', nutritionists.createNutritionist)
