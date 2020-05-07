@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const appointmentSchema = new mongoose.Schema({
+    date:{
+        type: Date,
+        required: true
+    },
     height:{
         type: String,
         required: true
