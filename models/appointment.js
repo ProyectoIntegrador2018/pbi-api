@@ -58,6 +58,17 @@ const appointmentSchema = new mongoose.Schema({
     },
     notes:{
         type: String
+    },
+    nutritionist:{
+        name:{
+            type: String,
+            required: true
+        },
+        _id:{
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Nutritionist'
+        }
     }
 })
 
