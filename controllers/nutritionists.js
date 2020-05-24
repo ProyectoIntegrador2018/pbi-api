@@ -165,7 +165,7 @@ const report = async function(req,res){
         "PBI":0,
         "CG":0,
         "Cortesía":0,
-        "Clase Deportiva":0,
+        "Clase deportiva":0,
         "Intramuros": 0,
         "Representativos":0,
         "Ev. Médica":0,
