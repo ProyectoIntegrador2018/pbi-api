@@ -1,4 +1,5 @@
 const Nutritionist = require('../models/nutritionist')
+const Appointment = require("../models/appointment")
 const Record = require('../models/record')
 // const bcrypt = require('bcryptjs')
 
@@ -123,6 +124,84 @@ const validateSession = function(req,res){
       return res.send(false)
     })
   }
+
+const report = async function(req,res){
+    const nutritionist_id = req.params.id
+    const startDate = new Date(req.body.startDate)
+    const endDate = new Date(req.body.endDate)
+    const grouped = {}
+    var listaPosible = []
+    endDate.setHours(23)
+    endDate.setMinutes(59)
+    
+    var nutritionist = await Nutritionist.findById(nutritionist_id)
+    if(!nutritionist){
+        res.status(400).send({"error":"Nutrilogo no encontrado"})
+    }
+    var list = await Appointment.find({"_id":{ $in: nutritionist.appointments }})
+   
+   
+   for(const appoint of list){
+        const dateApp = new Date(appoint.date)
+      
+        var record = await Record.findOne({appointments:appoint._id})
+
+        if(!grouped[record._id]){
+            grouped[record._id] = record
+            grouped[record._id].appointments = []
+        
+        }
+        if(dateApp.getTime() >= startDate.getTime() && dateApp.getTime() <= endDate.getTime()){
+            grouped[record._id].appointments.push(appoint._id)
+        }    
+    }
+    
+    let report = {
+        pacientes:{
+            "Hombre":{},
+            "Mujer":{},
+            "Otro":{}
+        },
+        citas:{
+            "Hombre":{},
+            "Mujer":{},
+            "Otro":{}
+        }
+    }
+
+    for(const patient in grouped){
+        //Agregar al contador de pacientes total
+        if(!report["pacientes"][grouped[patient].gender]["Total"]){
+            report["pacientes"][grouped[patient].gender]["Total"] = 1;
+        }else{
+            report["pacientes"][grouped[patient].gender]["Total"] += 1;
+        }
+        //Agregar al contador de pacientes de su programa
+        if(!report["pacientes"][grouped[patient].gender][grouped[patient].program]){
+            report["pacientes"][grouped[patient].gender][grouped[patient].program] = 1;
+        }else{
+            report["pacientes"][grouped[patient].gender][grouped[patient].program] += 1;
+        }
+
+        //Agregar al contador de citas total
+        if(!report["citas"][grouped[patient].gender]["Total"]){
+            report["citas"][grouped[patient].gender]["Total"] = grouped[patient].appointments.length;
+        }else{
+            report["citas"][grouped[patient].gender]["Total"] +=grouped[patient].appointments.length;
+        }
+        //Agregar al contador de citas del programa
+        if(!report["citas"][grouped[patient].gender][grouped[patient].program]){
+            report["citas"][grouped[patient].gender][grouped[patient].program] = grouped[patient].appointments.length;
+        }else{
+            report["citas"][grouped[patient].gender][grouped[patient].program] += grouped[patient].appointments.length;
+        }
+    }
+    console.log(report)
+    return res.send(report)
+   
+
+    
+}
   
 
 module.exports = {
@@ -133,5 +212,6 @@ module.exports = {
     login: login,
     logout: logout,
     deleteNutritionist: deleteNutritionist,
-    validateSession:validateSession
+    validateSession:validateSession,
+    report: report
 }
