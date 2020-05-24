@@ -246,6 +246,15 @@ const switchProfessor = async function (req, res) {
     }
 }
 
+const validateSession = function (req, res) {
+    const token = req.query.token
+    Account.validateToken(token).then(function (data) {
+        return res.send(data)
+    }).catch(function () {
+        return res.send(false)
+    })
+}
+
 module.exports = {
     getAccounts: getAccounts,
     getAccount: getAccount,
@@ -255,5 +264,6 @@ module.exports = {
     updateAccount: updateAccount,
     switchAdmin: switchAdmin,
     switchNutritionist: switchNutritionist,
-    switchProfessor: switchProfessor
+    switchProfessor: switchProfessor,
+    validateSession: validateSession
 }

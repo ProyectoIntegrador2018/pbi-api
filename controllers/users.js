@@ -258,14 +258,14 @@ const resetPassword = function (req, res) {
     }
 }
 
-const validateSession = function (req, res) {
-    const token = req.query.token
-    User.validateToken(token).then(function (data) {
-        return res.send(data)
-    }).catch(function () {
-        return res.send(false)
-    })
-}
+// const validateSession = function (req, res) {
+//     const token = req.query.token
+//     User.validateToken(token).then(function (data) {
+//         return res.send(data)
+//     }).catch(function () {
+//         return res.send(false)
+//     })
+// }
 
 const getAttendance = function (req, res) {
     const _classID = req.params.id
@@ -304,7 +304,7 @@ module.exports = {
     requestResetPassword: requestResetPassword,
     resetPassword: resetPassword,
     getUserOnResetP: getUserOnResetP,
-    validateSession: validateSession,
+    // validateSession: validateSession,
     getAttendance: getAttendance
 }
 
