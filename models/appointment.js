@@ -1,65 +1,65 @@
 const mongoose = require('mongoose')
 
 const appointmentSchema = new mongoose.Schema({
-    date:{
+    date: {
         type: Date,
         required: true
     },
-    height:{
+    height: {
         type: String,
         required: true
     },
-    weight:{
+    weight: {
         type: String,
         required: true
     },
-    IMC:{
+    IMC: {
         type: String,
         required: true,
     },
-    IMCDiagnostic:{
+    IMCDiagnostic: {
         type: String,
         required: true
     },
-    muscleMass:{
+    muscleMass: {
         type: Number,
         required: true
     },
-    fatMass:{
+    fatMass: {
         type: Number,
         required: true
     },
-    fatMassPct:{
+    fatMassPct: {
         type: Number
     },
-    totalWater:{
+    totalWater: {
         type: Number
     },
-    intercellWater:{
+    intercellWater: {
         type: Number
     },
-    extracellWater:{
+    extracellWater: {
         type: Number
     },
-    metabolicRate:{
+    metabolicRate: {
         type: Number
     },
-    visceralFat:{
+    visceralFat: {
         type: Number
     },
-    waist:{
+    waist: {
         type: Number
     },
-    umbilical:{
+    umbilical: {
         type: Number
     },
-    hip:{
+    hip: {
         type: Number
     },
-    notes:{
+    notes: {
         type: String
     }
 })
 
-const Appointment = mongoose.model('Appointment',appointmentSchema)
+const Appointment = mongoose.model('Appointment', appointmentSchema)
 module.exports = Appointment
