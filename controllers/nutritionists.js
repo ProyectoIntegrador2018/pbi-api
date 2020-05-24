@@ -125,6 +125,11 @@ const validateSession = function(req,res){
     })
   }
 
+
+  function jsonCopy(src) {
+    return JSON.parse(JSON.stringify(src));
+  }
+
 const report = async function(req,res){
     const nutritionist_id = req.params.id
     const startDate = new Date(req.body.startDate)
@@ -156,16 +161,28 @@ const report = async function(req,res){
         }    
     }
     
+    var placeHolder = {
+        "PBI":0,
+        "CG":0,
+        "Cortesía":0,
+        "Clase Deportiva":0,
+        "Intramuros": 0,
+        "Representativos":0,
+        "Ev. Médica":0,
+        "Líderes": 0,
+        "Otro":0
+    }
+
     let report = {
         pacientes:{
-            "Hombre":{},
-            "Mujer":{},
-            "Otro":{}
+            "Hombre": jsonCopy(placeHolder),
+            "Mujer": jsonCopy(placeHolder),
+            "Otro":jsonCopy(placeHolder)
         },
         citas:{
-            "Hombre":{},
-            "Mujer":{},
-            "Otro":{}
+            "Hombre":jsonCopy(placeHolder),
+            "Mujer":jsonCopy(placeHolder),
+            "Otro": jsonCopy(placeHolder)
         }
     }
 
@@ -196,7 +213,6 @@ const report = async function(req,res){
             report["citas"][grouped[patient].gender][grouped[patient].program] += grouped[patient].appointments.length;
         }
     }
-    console.log(report)
     return res.send(report)
    
 
