@@ -170,7 +170,8 @@ const report = async function(req,res){
         "Representativos":0,
         "Ev. Médica":0,
         "Líderes": 0,
-        "Otro":0
+        "Otro":0,
+        "Total":0
     }
 
     let report = {
