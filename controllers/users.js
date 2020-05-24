@@ -27,7 +27,8 @@ const getUsers = function (req, res) {
 }
 
 const getUser = function (req, res) {
-    User.findById(req.params.id).exec(function (user) {
+    const _id = req.params.id
+    User.findById(_id).exec(function (user) {
         if (!user) {
             return res.status(404).send({ error: `El usuario con id ${_id} no existe` })
         }

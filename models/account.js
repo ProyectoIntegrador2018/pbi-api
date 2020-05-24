@@ -34,6 +34,12 @@ const accountSchema = new mongoose.Schema({
             }
         }
     },
+    departamento: {
+        type: String
+    },
+    rectoria: {
+        type: String
+    },
     password: {
         type: String,
         required: true,
