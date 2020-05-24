@@ -48,6 +48,7 @@ const createAccount = async function (req, res) {
             name: req.body.name,
             surname: req.body.surname,
             nomina: req.body.nomina,
+            email: req.body.email,
             departamento: req.body.departamento,
             rectoria: req.body.rectoria
         })
