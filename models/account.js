@@ -237,21 +237,21 @@ accountSchema.statics.validateToken = function (token) {
                 .then(function (account) {
                     if (account) {
                         //console.log(account.isAdmin)
+                        var res = {
+                            admin: false,
+                            nutritionist: false,
+                            professor: false
+                        }
                         if (account.isAdmin) {
-                            resolve({ admin: true })
-                        } else {
-                            resolve({ admin: false })
+                            res['admin'] = true
                         }
                         if (account.isNutri) {
-                            resolve({ nutritionist: true })
-                        } else {
-                            resolve({ nutritionist: false })
+                            res['nutritionist'] = true
                         }
                         if (account.isProf) {
-                            resolve({ professor: true })
-                        } else {
-                            resolve({ professor: false })
+                            res['professor'] = true
                         }
+                        resolve(res)
                     }
                     else {
                         reject(false)
