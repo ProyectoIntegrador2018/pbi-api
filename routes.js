@@ -111,7 +111,7 @@ router.post('/nutricion/login', nutritionists.login)
 router.post('/nutricion/logout', auth.authNutri, nutritionists.logout)
 router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
 
-router.post('/nutricion/records', records.createRecord)
+router.post('/nutricion/records', auth.authNutri, records.createRecord)
 router.post('/nutricion/records/history/:id', records.createRecordHistory)
 router.post('/nutricion/record/reminder/:id', records.addReminder)
 router.get('/nutricion/records', records.getRecords)

@@ -3,14 +3,16 @@ const Nutritionist = require("../models/nutritionist")
 
 const createRecord = async function (req, res) {
     var _nutrID
+    
     if (req.nutritionist) {
         _nutrID = req.nutritionist._id
     } else {
         _nutrID = req.body.id
     }
+    
     var nutritionist = await Nutritionist.findById(_nutrID)
     if (!nutritionist) {
-        return res.status(404).send({ error: `El nutriólogo con id ${_id} no existe` })
+        return res.status(404).send({ error: `El nutriólogo con id ${_nutrID} no existe` })
     }
     req.body.nutritionist = _nutrID
     const record = new Record(req.body)
