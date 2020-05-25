@@ -211,7 +211,7 @@ const enrollByPayroll = function (req, res) {
             }).catch(function (error) {
                 res.status(505).send({ error: error })
             })
-            mailing(user.name + " " + user.surename, user.nomina, user.email, clase)
+            mailing(user.name + " " + user.surname, user.nomina, user.email, clase)
             return res.send(clase)
         })
     }).catch(function (error) {

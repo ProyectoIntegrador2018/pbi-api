@@ -139,7 +139,7 @@ const fillMedicalRecordAdmin = function (req, res) {
 const updateUserByAdmin = function (req, res) {
     const _id = req.params.id
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'surename', 'departamento', 'rectoria', 'password', 'age', 'insurancecompany', 'securitynumber', 'hospital', 'contactname', 'contactphone', 'contactrelationship', 'illnesses', 'flagrecentinjury', 'injuryindication', 'flagmedicine',
+    const allowedUpdates = ['name', 'surname', 'departamento', 'rectoria', 'password', 'age', 'insurancecompany', 'securitynumber', 'hospital', 'contactname', 'contactphone', 'contactrelationship', 'illnesses', 'flagrecentinjury', 'injuryindication', 'flagmedicine',
         'medicineindication', 'physicalcondition']
 
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
