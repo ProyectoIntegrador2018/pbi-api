@@ -59,6 +59,7 @@ router.put('/classes/disenroll/user/:id', auth.authUser, classes.disenrollUser)
 router.put('/classes/disenroll/:id', auth.authAdmin, classes.disenrollUserByAdmin)
 
 router.post('/users', users.createUser)
+router.put('/users', auth.authUser, users.updateUser)
 router.put('/users/medicalRecord', auth.authUser, users.fillMedicalRecord)
 router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRecordAdmin)
 router.put('/admin/users/:id', auth.authAdmin, users.updateUserByAdmin)

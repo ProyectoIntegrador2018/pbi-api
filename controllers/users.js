@@ -88,7 +88,7 @@ const logout = function (req, res) {
 const updateUser = function (req, res) {
     const _id = req.user._id
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'surename', 'departamento', 'rectoria', 'password', 'age', 'insurancecompany', 'securitynumber',
+    const allowedUpdates = ['name', 'surname', 'departamento', 'rectoria', 'password', 'age', 'insurancecompany', 'securitynumber',
         'hospital', 'contactname', 'contactphone', 'contactrelationship', 'illnesses', 'flagrecentinjury',
         'injuryindication', 'flagmedicine',
         'medicineindication', 'physicalcondition']
