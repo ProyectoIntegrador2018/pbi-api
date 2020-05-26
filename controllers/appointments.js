@@ -3,23 +3,29 @@ const Record = require('../models/record')
 const User = require('../models/record')
 
 
-const createAppointment = function (req, res) {
+const createAppointment = function(req,res){
     const appointment = new Appointment(req.body)
-    appointment.save().then(() => {
-        Record.findById(req.params.id).then((record) => {
-            record.appointments.push(appointment._id)
-            record.save().then(() => {
-                return res.send({ record: record, appointment: appointment })
-            }).catch((error) => {
-                console.log(error)
-                return res.status(400).send({ error: "Hubo un error, intentalo de nuevo" })
+    const nutritionist = req.nutritionist
+    appointment.nutritionist.name = nutritionist.name
+    appointment.nutritionist._id = nutritionist._id
+    nutritionist.appointments.push(appointment._id)
+    nutritionist.save().then(_=>{
+        appointment.save().then(()=>{
+            Record.findById(req.params.id).then((record)=>{
+                record.appointments.push(appointment._id)
+                record.save().then(()=>{
+                    return res.send({record:record,appointment:appointment})
+                }).catch((error)=>{
+                    console.log(error)
+                    return res.status(400).send({error:"Hubo un error, intentalo de nuevo"})
+                })
+            }).catch(error=>{
+                
+                return res.status(500).send({error:"No se pudo guardar la cita"})
             })
-        }).catch(error => {
-            return res.status(500).send({ error: "No se pudo guardar la cita" })
         })
-    }).catch(error => {
-        console.log(error)
-        return res.status(500).send({ error: "Hubo un error. Revisa los valores" })
+    }).catch(_=>{
+        return res.status(500).send({error:"Hubo un error al guardar los datos"})
     })
 }
 
