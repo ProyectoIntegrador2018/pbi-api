@@ -2,7 +2,11 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const appointmentSchema = new mongoose.Schema({
-    date: {
+    record:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Record'
+    },
+    date:{
         type: Date,
         required: true
     },

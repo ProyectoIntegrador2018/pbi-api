@@ -123,14 +123,15 @@ router.delete('/nutricion/records/:id', records.deleteRecord)
 
 router.post('/nutricion/appointment/:id', appointment.createAppointment)
 router.get('/nutricion/appointment/:id', appointment.getAppointment)
+router.get('/nutricion/appointments/span', appointment.getAppointmentsSpan)
 router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
-router.put('/nutricion/appointment/:id', appointment.updateAppointment)
+router.put('/nutrcion/appointment/:id', appointment.updateAppointment)
 
-router.get('*', function (req, res) {
-    res.send({
-        error: 'This route does not exist'
-    })
+router.get('*', function(req, res) {
+  res.send({
+    error: 'This route does not exist'
+  })
 })
 
 module.exports = router

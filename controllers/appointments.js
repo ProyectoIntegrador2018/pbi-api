@@ -2,6 +2,7 @@ const Appointment = require('../models/appointment')
 const Record = require('../models/record')
 const User = require('../models/record')
 
+
 const createAppointment = function (req, res) {
     const appointment = new Appointment(req.body)
     appointment.save().then(() => {
@@ -14,7 +15,6 @@ const createAppointment = function (req, res) {
                 return res.status(400).send({ error: "Hubo un error, intentalo de nuevo" })
             })
         }).catch(error => {
-
             return res.status(500).send({ error: "No se pudo guardar la cita" })
         })
     }).catch(error => {
@@ -82,10 +82,21 @@ const updateAppointment = function (req, res) {
     })
 }
 
+const getAppointmentsSpan = function(req, res){
+    const _start = new Date(req.body.startDate)
+    const _end = new Date(req.body.endDate+'T23:59:59.000Z')
+    Appointment.find({'date': {$gte: _start, $lte: _end}}).populate('record').then(function(appointments){
+        res.send(appointments)
+    }).catch(function(error){
+        return res.status(500).send({error: error})
+    })
+}
+
 module.exports = {
     createAppointment: createAppointment,
     deleteAppointment: deleteAppointment,
     updateAppointment: updateAppointment,
     getAppointment: getAppointment,
-    getAppointments: getAppointments
+    getAppointments: getAppointments,
+    getAppointmentsSpan: getAppointmentsSpan
 }
