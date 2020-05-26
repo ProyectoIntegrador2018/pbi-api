@@ -115,12 +115,12 @@ const deleteNutritionist = async function (req, res) {
     return res.send(nutritionist)
 }
 
-const validateSession = function(req,res){
+const validateSession = function (req, res) {
     const token = req.query.token
-    Nutritionist.validateToken(token).then(function(data){
-      return res.send(data)
-    }).catch(function(){
-      return res.send(false)
+    Nutritionist.validateToken(token).then(function (data) {
+        return res.send(data)
+    }).catch(function () {
+        return res.send(false)
     })
   }
 

@@ -2,14 +2,14 @@ const Class = require('../models/class')
 const User = require('../models/user')
 const Term = require('../models/term')
 
-if(process.env.NODE_ENV === 'production'){
+if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
     var EMAIL = process.env.EMAIL;
     var HOST = process.env.HOST
     var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
-}else{
-	const config = require('../config')
+} else {
+    const config = require('../config')
     var KEY = config.key;
     var EMAIL = config.email;
     var HOST = config.host
@@ -17,25 +17,25 @@ if(process.env.NODE_ENV === 'production'){
     var SECURE = config.securehost
 }
 
-const createClass = function(req,res){
+const createClass = function (req, res) {
     const clase = new Class(req.body)
     const idTerm = req.params.id
-    Term.findById(idTerm, function(err,term){
+    Term.findById(idTerm, function (err, term) {
         clase.term = term.name + " " + term.year
         clase.save().then(function(){
             term.classes.push(clase._id)    
             term.save().then(function(){
                 return res.send(clase)
             })
-        }).catch(function(error){
+        }).catch(function (error) {
             return res.status(400).send(error)
         })
-    }).catch(function(error){
+    }).catch(function (error) {
         return res.status(400).send(error)
     })
 }
 
-const createClasses = function(req,res){
+const createClasses = function (req, res) {
     var classes = []
     var idClasses = []
     const data = req.body
@@ -47,64 +47,64 @@ const createClasses = function(req,res){
             classes.push(newClass)
             idClasses.push(newClass["_id"])
         })
-        if(err){
+        if (err) {
             return res.send(err)
         }
-        if(!term){
+        if (!term) {
             return res.send("Periodo no encontrado")
         }
-        idClasses.forEach(function(idNew){
+        idClasses.forEach(function (idNew) {
             term.classes.push(idNew)
         })
-        term.save().then(function(){
-            Class.insertMany(classes,function(err,clase){
+        term.save().then(function () {
+            Class.insertMany(classes, function (err, clase) {
                 if (err) {
                     res.send(err)
                 }
                 res.send(clase)
             })
         })
-    }).catch(function(err){
+    }).catch(function (err) {
         return res.status(400).send("Periodo dado no encontrado")
     })
 }
 
-const updateClass = function(req,res){
-    const update= req.body
+const updateClass = function (req, res) {
+    const update = req.body
     const idClass = req.params.id
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'instructor', 'frequency', 'startHour','endHour','classroom','quota']
+    const allowedUpdates = ['name', 'instructor', 'frequency', 'startHour', 'endHour', 'classroom', 'quota']
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
 
-    if( !isValidUpdate ) {
+    if (!isValidUpdate) {
         return res.status(400).send({
             error: 'Invalid update, only allowed to update: ' + allowedUpdates
         })
     }
-    Class.findByIdAndUpdate(idClass, update).then(function(clase) {
+    Class.findByIdAndUpdate(idClass, update).then(function (clase) {
         if (!clase) {
             return res.status(404).send()
         }
         return res.send(clase)
-    }).catch(function(error) {
+    }).catch(function (error) {
         res.status(500).send(error)
     })
 }
 
-const deleteClass = function(req,res){
+const deleteClass = function (req, res) {
     const _id = req.params.id
     const termId = req.query.term
-    Class.findByIdAndDelete(_id).then(function(clase){
-        if(!clase){
+    Class.findByIdAndDelete(_id).then(function (clase) {
+        if (!clase) {
             return res.status(404).send()
         }
-        Term.findById(termId).then((term)=>{
-            term.classes = term.classes.filter(c => c!=_id)
-            term.save().then(()=>{return res.send(clase)})
-            .catch(()=>{res.status(500).send({error:"No se pudo borrar la clase"})})
-        }).catch(()=>{return res.send({error:"Perido no válido"})})
-        
-    }).catch(function(error){
+        Term.findById(termId).then((term) => {
+            term.classes = term.classes.filter(c => c != _id)
+            term.save().then(() => { return res.send(clase) })
+                .catch(() => { res.status(500).send({ error: "No se pudo borrar la clase" }) })
+        }).catch(() => { return res.send({ error: "Perido no válido" }) })
+
+    }).catch(function (error) {
         res.status(505).send(error)
     })
 }
@@ -115,7 +115,7 @@ const getClasses = function(req,res){
     })
 }
 
-const getClassByID = function(req,res){
+const getClassByID = function (req, res) {
     const _id = req.params.id
     Class.findById(_id).populate('enrolled').exec(function(err,clase){
         if(!clase){
@@ -125,195 +125,196 @@ const getClassByID = function(req,res){
     })
 }
 
-const enrollUser = function(req,res){
-    const _classID = req.params.id
-    var _userID 
-    if(req.user){
-        _userID = req.user._id
-    }else{
-        _userID = req.body.id
-    }
-    User.findById(_userID).then(function(user){
-        if(!user){
-            return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
-        }
-        Class.findById(_classID).then(function(clase){
-            if(!clase){
-                return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-            }
-            if(clase.enrolled.length >= clase.quota){
-                return res.status(707).send({ error : `La clase está a capacidad máxima.`})
-            }
-            var i
-            for(i=0; i < clase.enrolled.length; i++){
-                if(clase.enrolled[i].toString() == _userID){
-                    return res.status(717).send({ error : `User already enrolled in this class.`})
-                }
-            }
-            Class.findByIdAndUpdate(_classID, {$push : {enrolled: _userID}}).then(function(clase){
-                if(!clase){
-                    return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-                }
-            }).catch(function(error){
-                return res.status(505).send({ error: "No se pudo inscribir la clase" })
-            })
-            User.findByIdAndUpdate(_userID, {$push : {classes : _classID}}).then(function(user){
-                if(!user){
-                    return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
-                }
-            }).catch(function(error){
-                res.status(505).send({ error: error })
-            })
-            mailing(user.name,user.nomina,user.email,clase)
-            return res.send(clase)
-        })
-    }).catch(function(error){
-        res.status(505).send({ error: error })
-    })
-}
-
-const enrollByPayroll = function(req,res){
-    const _classID = req.params.id
-    const _payroll = req.body.nomina
-    User.findOne({nomina : _payroll}).then(function(user){
-        const _userID = user.id
-        if(!user){
-            return res.status(404).send({ error : `El usuario con nómina ${_payroll} no existe.`})
-        }
-        Class.findById(_classID).then(function(clase){
-            if(!clase){
-                return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-            }
-            if(clase.enrolled.length >= clase.quota){
-                return res.status(707).send({ error : `La clase está a capacidad máxima.`})
-            }
-            var i
-            for(i=0; i < clase.enrolled.length; i++){
-                if(clase.enrolled[i].toString() == _userID){
-                    return res.status(717).send({ error : `El usuario ya está inscrito en esta clase.`})
-                }
-            }
-            Class.findByIdAndUpdate(_classID, {$push : {enrolled: _userID}}).then(function(clase){
-                if(!clase){
-                    return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-                }
-            }).catch(function(error){
-                res.status(505).send({ error: error })
-            })
-            User.findByIdAndUpdate(_userID, {$push : {classes : _classID}}).then(function(user){
-                if(!user){
-                    return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
-                }
-            }).catch(function(error){
-                res.status(505).send({ error: error })
-            })
-            mailing(user.name+" "+user.surename,user.nomina,user.email,clase)
-            return res.send(clase)
-        })
-    }).catch(function(error){
-        res.status(505).send({ error: error })
-    })
-}
-
-const disenrollUser = function(req,res){
+const enrollUser = function (req, res) {
     const _classID = req.params.id
     var _userID
-    if(req.user){
+    if (req.user) {
         _userID = req.user._id
-    }else{
-        _userID = req.body.userID
+    } else {
+        _userID = req.body.id
     }
-    User.findByIdAndUpdate(_userID, {$pull : {classes : _classID}}).then(function(user){
-        if(!user){
-            return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
+    User.findById(_userID).then(function (user) {
+        if (!user) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
         }
-    }).catch(function(error){
-        res.status(505).send({ error: error })
-    })
-    Class.findByIdAndUpdate(_classID, {$pull : {enrolled: _userID}}).then(function(course){
-        if(!course){
-            return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-        }
-        
-        return res.send(course)
-    }).catch(function(error){
+        Class.findById(_classID).then(function (clase) {
+            if (!clase) {
+                return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+            }
+            if (clase.enrolled.length >= clase.quota) {
+                return res.status(707).send({ error: `La clase está a capacidad máxima.` })
+            }
+            var i
+            for (i = 0; i < clase.enrolled.length; i++) {
+                if (clase.enrolled[i].toString() == _userID) {
+                    return res.status(717).send({ error: `User already enrolled in this class.` })
+                }
+            }
+            Class.findByIdAndUpdate(_classID, { $push: { enrolled: _userID } }).then(function (clase) {
+                if (!clase) {
+                    return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+                }
+            }).catch(function (error) {
+                return res.status(505).send({ error: "No se pudo inscribir la clase" })
+            })
+            User.findByIdAndUpdate(_userID, { $push: { classes: _classID } }).then(function (user) {
+                if (!user) {
+                    return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
+                }
+            }).catch(function (error) {
+                res.status(505).send({ error: error })
+            })
+            mailing(user.name, user.nomina, user.email, clase)
+            return res.send(clase)
+        })
+    }).catch(function (error) {
         res.status(505).send({ error: error })
     })
 }
 
-const disenrollUserByAdmin = function(req,res){
+const enrollByPayroll = function (req, res) {
+    const _classID = req.params.id
+    const _payroll = req.body.nomina
+    User.findOne({ nomina: _payroll }).then(function (user) {
+        const _userID = user.id
+        if (!user) {
+            return res.status(404).send({ error: `El usuario con nómina ${_payroll} no existe.` })
+        }
+        Class.findById(_classID).then(function (clase) {
+            if (!clase) {
+                return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+            }
+            if (clase.enrolled.length >= clase.quota) {
+                return res.status(707).send({ error: `La clase está a capacidad máxima.` })
+            }
+            var i
+            for (i = 0; i < clase.enrolled.length; i++) {
+                if (clase.enrolled[i].toString() == _userID) {
+                    return res.status(717).send({ error: `El usuario ya está inscrito en esta clase.` })
+                }
+            }
+            Class.findByIdAndUpdate(_classID, { $push: { enrolled: _userID } }).then(function (clase) {
+                if (!clase) {
+                    return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+                }
+            }).catch(function (error) {
+                res.status(505).send({ error: error })
+            })
+            User.findByIdAndUpdate(_userID, { $push: { classes: _classID } }).then(function (user) {
+                if (!user) {
+                    return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
+                }
+            }).catch(function (error) {
+                res.status(505).send({ error: error })
+            })
+            mailing(user.name + " " + user.surname, user.nomina, user.email, clase)
+            return res.send(clase)
+        })
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const disenrollUser = function (req, res) {
+    const _classID = req.params.id
+    var _userID
+    if (req.user) {
+        _userID = req.user._id
+    } else {
+        _userID = req.body.userID
+    }
+    User.findByIdAndUpdate(_userID, { $pull: { classes: _classID } }).then(function (user) {
+        if (!user) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
+        }
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+    Class.findByIdAndUpdate(_classID, { $pull: { enrolled: _userID } }).then(function (course) {
+        if (!course) {
+            return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+        }
+
+        return res.send(course)
+    }).catch(function (error) {
+        res.status(505).send({ error: error })
+    })
+}
+
+const disenrollUserByAdmin = function (req, res) {
     const _classID = req.params.id
     var _userID
 
     _userID = req.body.userID
-    
-    
-    User.findByIdAndUpdate(_userID, {$pull : {classes : _classID}}).then(function(user){
-        if(!user){
-            return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
+
+
+    User.findByIdAndUpdate(_userID, { $pull: { classes: _classID } }).then(function (user) {
+        if (!user) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
         }
-    }).catch(function(error){
+        Class.findByIdAndUpdate(_classID, { $pull: { enrolled: _userID } }).then(function (course) {
+            if (!course) {
+                return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+            }
+            return res.send(course)
+        }).catch(function (error) {
+            res.status(505).send({ error: error })
+        })
+    }).catch(function (error) {
         res.status(505).send({ error: error })
     })
-    Class.findByIdAndUpdate(_classID, {$pull : {enrolled: _userID}}).then(function(course){
-        if(!course){
-            return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
-        }
-        return res.send(course)
-    }).catch(function(error){
-        res.status(505).send({ error: error })
-    })
+
 }
 
 //SOLAMENTE REGRESA LAS CLASES DEL PERIODO ACTIVO 
-const getUserClasses = function(req,res){
+const getUserClasses = function (req, res) {
     var classes = req.user.classes
-    Class.find({'_id': { $in: classes}}).then((listaClases)=>{
-        listaClases.forEach(function(clase){
-            Term.findOne({classes:clase._id}).then(function(term){
-                if(term.flagCurrent){
+    Class.find({ '_id': { $in: classes } }).then((listaClases) => {
+        listaClases.forEach(function (clase) {
+            Term.findOne({ classes: clase._id }).then(function (term) {
+                if (term.flagCurrent) {
                     var listaClasesActivas = []
-                    listaClases.forEach(function(clase2){                    
-                        if(term.classes.includes(clase2._id)){                           
+                    listaClases.forEach(function (clase2) {
+                        if (term.classes.includes(clase2._id)) {
                             listaClasesActivas.push(clase2)
                         }
                     })
                     return res.send(listaClasesActivas)
-                }  
-            }).catch(function(error){
+                }
+            }).catch(function (error) {
                 return res.send(error)
             })
         })
-        
-    }).catch((err)=>{
+
+    }).catch((err) => {
         res.send(err)
     })
 }
 
-const addAttendance = async function(req, res){
+const addAttendance = async function (req, res) {
     const _classID = req.params.id
     const _date = new Date(req.body.date)
     var course = await Class.findById(_classID)
-    if(!course){
-        return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
+    if (!course) {
+        return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
     }
-    
+
     dates = course.attendance
     var exists = false
-    for(const day in dates){
-        if(day.date == _date){
+    for (const day in dates) {
+        if (day.date == _date) {
             exists = true
         }
     }
-    if(exists){
-        return res.status(400).send({error : `La fecha ${_date} ya existe en la lista de asistencia`})
-    } else{
+    if (exists) {
+        return res.status(400).send({ error: `La fecha ${_date} ya existe en la lista de asistencia` })
+    } else {
         var _enrolled = []
-        for(var i=0; i<course.enrolled.length; i++){
+        for (var i = 0; i < course.enrolled.length; i++) {
             var _userID = course.enrolled[i]
             var user = await User.findById(_userID)
-            if(!user){
-                return res.status(404).send({ error : `El usuario con id ${_userID} no existee`})
+            if (!user) {
+                return res.status(404).send({ error: `El usuario con id ${_userID} no existee` })
             }
             var ind = -1
             for(var j=0; j<user.attendance.length; j++){
@@ -321,8 +322,8 @@ const addAttendance = async function(req, res){
                     ind = j
                 }
             }
-            if(ind == -1){
-                return res.status(400).send({ error : `El usuario con id ${_userID} parece no estar inscrito en la clase`})
+            if (ind == -1) {
+                return res.status(400).send({ error: `El usuario con id ${_userID} parece no estar inscrito en la clase` })
             }
             const _ret = user.attendance[ind].retired
             _enrolled.push({
@@ -344,101 +345,101 @@ const addAttendance = async function(req, res){
             date: _date,
             attendees: _enrolled
         })
-        course.save().then(function(){
+        course.save().then(function () {
             return res.send(course)
-        }).catch(function(error){
+        }).catch(function (error) {
             res.status(505).send({ error: error })
         })
     }
 }
 
-const markAttendance = async function(req, res){
+const markAttendance = async function (req, res) {
     const _classID = req.params.id
     const _userID = req.body.user
     const _date = new Date(req.body.date)
 
     var course = await Class.findById(_classID)
-    if(!course){
-        return res.status(404).send({ error : `La clase con id ${_classID} no existe.`})
+    if (!course) {
+        return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
     }
     var indDate = -1
     var dates = course.attendance
-    for(var i= 0; i<dates.length;i++){
-        if(dates[i].date == _date){
+    for (var i = 0; i < dates.length; i++) {
+        if (dates[i].date == _date) {
             indDate = i
         }
     }
-    if(indDate == -1){
-        return res.status(404).send({ error : `La clase con id ${_classID} no tiene registro para el ${_date}`})
+    if (indDate == -1) {
+        return res.status(404).send({ error: `La clase con id ${_classID} no tiene registro para el ${_date}` })
     }
 
     var user = await User.findById(_userID)
-    if(!user){
-        return res.status(404).send({ error : `El usuario con id ${_userID} no existe.`})
+    if (!user) {
+        return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
     }
     var indUser = -1
     var record = dates[indDate].attendees
-    for(var i=0; i<record.length; i++){
-        if(record[i].attendee == _userID){
+    for (var i = 0; i < record.length; i++) {
+        if (record[i].attendee == _userID) {
             indUser = i
         }
     }
-    if(indUser == -1){
-        return res.status(404).send({ error : `El usuario con id ${_userID} no tiene registro para la fecha ${_date}`})
+    if (indUser == -1) {
+        return res.status(404).send({ error: `El usuario con id ${_userID} no tiene registro para la fecha ${_date}` })
     }
 
     course.attendance[indDate].attendees[indUser].assisted = !course.attendance[indDate].attendees[indUser].assisted
-    course.save().then(function(){
+    course.save().then(function () {
         var indCourse = -1
         var userCourses = user.attendance
-        for(var i=0; i<userCourses.length; i++){
-            if(userCourses[i].class == _classID){
+        for (var i = 0; i < userCourses.length; i++) {
+            if (userCourses[i].class == _classID) {
                 indCourse = i
             }
         }
-        if(indUser == -1){
-            return res.status(404).send({ error : `El usuario con id ${_userID} tiene registro de la clase ${_classID}`})
+        if (indUser == -1) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} tiene registro de la clase ${_classID}` })
         }
         var indDay = -1
         var days = user.attendance[indCourse].record
-        for(var i=0; i<days.length; i++){
-            if(days[i].date == _date){
+        for (var i = 0; i < days.length; i++) {
+            if (days[i].date == _date) {
                 indDay = i
             }
         }
-        if(indDay == -1){
-            return res.status(404).send({ error : `El usuario con id ${_userID} no tiene registro para la fecha ${_date}`})
+        if (indDay == -1) {
+            return res.status(404).send({ error: `El usuario con id ${_userID} no tiene registro para la fecha ${_date}` })
         }
         user.attendance[indCourse].record[indDay].assistance = !user.attendance[indCourse].record[indDay].assistance
-        user.save().then(function(){
+        user.save().then(function () {
             return res.send(course)
-        }).catch(function(error){
+        }).catch(function (error) {
             res.status(505).send({ error: error })
         })
-    }).catch(function(error){
+    }).catch(function (error) {
         res.status(505).send({ error: error })
     })
 }
 
 module.exports = {
-    createClass : createClass,
-    updateClass : updateClass,
-    getClasses : getClasses,
-    getClassByID : getClassByID,
-    deleteClass : deleteClass,
+    createClass: createClass,
+    updateClass: updateClass,
+    getClasses: getClasses,
+    getClassByID: getClassByID,
+    deleteClass: deleteClass,
     createClasses: createClasses,
-    enrollUser : enrollUser,
-    enrollByPayroll : enrollByPayroll,
-    disenrollUser : disenrollUser,
-    disenrollUserByAdmin : disenrollUserByAdmin,
-    getUserClasses : getUserClasses,
-    addAttendance : addAttendance,
-    markAttendance : markAttendance
+    enrollUser: enrollUser,
+    enrollByPayroll: enrollByPayroll,
+    disenrollUser: disenrollUser,
+    disenrollUserByAdmin: disenrollUserByAdmin,
+    getUserClasses: getUserClasses,
+    addAttendance: addAttendance,
+    markAttendance: markAttendance
 }
 
 
 
-function mailing(name,nomina, correo, clase){
+function mailing(name, nomina, correo, clase) {
     const nodemailer = require('nodemailer')
     const mailTransport = nodemailer.createTransport({
         host: HOST,
