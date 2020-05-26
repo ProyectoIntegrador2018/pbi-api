@@ -148,7 +148,7 @@ const report = async function(req,res){
    
    for(const appoint of list){
         const dateApp = new Date(appoint.date)
-        dateApp.setHours(dateApp.getHours()-17)
+        dateApp.setHours(dateApp.getHours()-24)
         var record = await Record.findOne({appointments:appoint._id})
 
         if(!grouped[record._id]){
