@@ -6,6 +6,15 @@ const appointmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Record'
     },
+    nutritionist:{
+        name:{
+            type: String
+        },
+        id:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Nutritionist'
+        }
+    },
     date:{
         type: Date,
         required: true

@@ -2,11 +2,20 @@ const Appointment = require('../models/appointment')
 const Record = require('../models/record')
 const User = require('../models/record')
 
-
-const createAppointment = function (req, res) {
-    const appointment = new Appointment(req.body)
-    appointment.save().then(() => {
-        Record.findById(req.params.id).then((record) => {
+const createAppointment = function(req,res){
+    const _nutriId = req.nutritionist._id
+    const _name = req.nutritionist.name + ' ' + req.nutritionist.surname
+    var appointment = new Appointment(req.body)
+    appointment.record = req.params.id
+    appointment.nutritionist = {
+        name: _name,
+        id: _nutriId
+    }
+    appointment.save().then(()=>{
+        Record.findById(req.params.id).then((record)=>{
+            if(!record){
+                return res.status(404).send({error:"Expediente no encontrado"})
+            }
             record.appointments.push(appointment._id)
             record.save().then(() => {
                 return res.send({ record: record, appointment: appointment })
