@@ -282,6 +282,7 @@ userSchema.statics.resetPassword = function (token, newPass) {
 					return reject("No se pudo actualizar la contraseña")
 				})
 		} catch (e) {
+			//console.log(e)
 			return reject("El enlace para reestablecer la contraseña es inválido")
 		}
 	})
@@ -304,12 +305,16 @@ userSchema.statics.getUserOnTokenPass = function (token) {
 }
 
 userSchema.statics.validateToken = function (token) {
+	//console.log("Validando")
 	return new Promise(function (resolve, reject) {
 		try {
 			const decoded = jwt.verify(token, SECRET)
+			//console.log(decoded._id)
 			User.findOne({ _id:	decoded._id, 'tokens.token':	token })
 				.then(function (user) {
 					if (user) {
+
+						//console.log(user.isAdmin)
 						if (user.isAdmin) {
 							resolve({ admin:	true })
 						} else {
@@ -323,6 +328,7 @@ userSchema.statics.validateToken = function (token) {
 					reject(false)
 				})
 		} catch (error) {
+			//console.log("erorr!")
 			reject(false)
 		}
 	})

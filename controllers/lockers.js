@@ -117,7 +117,7 @@ const changeCost = async function (req, res) {
             return res.status(404).send({ error: `El casillero con id ${_cabID} no existe` })
         }
         cabin.save().then(function () {
-        
+            console.log(cabin)
         }).catch(function (error) {
             res.status(505).send({ error: error })
         })
@@ -153,7 +153,7 @@ const addCabins = async function (req, res) {
             assignee: null
         })
         cabin.save().then(function () {
-
+            console.log(cabin)
         }).catch(function (error) {
             res.status(505).send({ error: error })
         })
@@ -192,7 +192,7 @@ const removeCabins = async function (req, res) {
             // Mandar correo confirmacion
             user.locker = null
             user.save().then(function () {
-               // Mandar correo confirmacion
+                console.log(`El casillero tiene un usuario asignado`)
             })
         }
 
@@ -318,6 +318,7 @@ const switchStatus = async function (req, res) {
                 var user = await User.findById(cabin.assignee)
                 if (user) {
                     // Mandar 
+                    console.log("El casillero tienen un usuario asignado.")
                     user.locker = null
                     user.save().then(function () {
                         cabin.status = 'Disponible'
@@ -361,7 +362,7 @@ const deleteLocker = async function (req, res) {
             user.locker = null
             user.save().then(function () {
                 // Mandar correo al usuario
-                //(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID}`)
+                console.log(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID}`)
             })
         }
     }

@@ -18,7 +18,7 @@ const createRecord = async function(req,res){
     record.save().then(()=>{
         nutritionist.records.push(record)
         nutritionist.save().then(()=>{
-           
+            console.log(nutritionist)
             return res.send(record)
         })
     })
@@ -83,7 +83,7 @@ const addReminder = function(req,res){
             return res.status(400).send({"error":"No es encontró el registro"})
         }
         record["dayReminder"] = req.body
-      
+        console.log(record)
         record.save().then((saved)=>{
             return res.send(saved)
         }).catch(()=>{

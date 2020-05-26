@@ -33,7 +33,7 @@ const authAdmin = function (req, res, next) {
   try {
     const token = req.header('Authorization').replace('Bearer ', '')
     const decoded = jwt.verify(token, SECRET)
-   
+    console.log(token)
     User.findOne({ _id: decoded._id, 'tokens.token': token }).then(function (user) {
       if (!user) {
         throw new Error()
@@ -46,11 +46,11 @@ const authAdmin = function (req, res, next) {
         return res.status(401).send({ error: 'No cuentas con los permisos para realizar esta acción' })
       }
     }).catch(function (error) {
-    
+      //console.log(error)
       res.status(401).send({ error: 'Authenticate plz' })
     })
   } catch (e) {
-  
+    //console.log(e)
     res.status(401).send({ error: 'Authenticate plz' })
   }
 }
@@ -81,10 +81,13 @@ const authDual = async function (req, res, next) {
 
     
     var user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
-
+    console.log('User')
+    console.log(user)
 
     var nutritionist = await  Nutritionist.findOne({ _id: decoded._id, 'tokens.token': token })
-  
+    console.log('Nutritionist')
+    console.log(nutritionist)
+
     
     if(nutritionist){
       req.token = token
