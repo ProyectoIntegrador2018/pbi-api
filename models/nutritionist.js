@@ -32,6 +32,11 @@ const nutritionistSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectID,
         ref: 'Record'
     }],
+    appointments:[{
+        type: mongoose.Schema.Types.ObjectID,
+        ref: 'Appointment'
+    }
+    ]
 
 }, {
     toObject: {

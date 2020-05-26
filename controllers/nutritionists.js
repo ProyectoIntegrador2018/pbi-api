@@ -1,5 +1,6 @@
 const Nutritionist = require('../models/nutritionist')
 const Record = require('../models/record')
+const Appointment = require('../models/appointment')
 // const bcrypt = require('bcryptjs')
 
 if (process.env.NODE_ENV === 'production') {
@@ -136,8 +137,9 @@ const report = async function(req,res){
     var listaPosible = []
     endDate.setHours(23)
     endDate.setMinutes(59)
-    
+   
     var nutritionist = await Nutritionist.findById(nutritionist_id)
+    
     if(!nutritionist){
         res.status(400).send({"error":"Nutrilogo no encontrado"})
     }
@@ -146,7 +148,7 @@ const report = async function(req,res){
    
    for(const appoint of list){
         const dateApp = new Date(appoint.date)
-      
+        dateApp.setHours(dateApp.getHours()-17)
         var record = await Record.findOne({appointments:appoint._id})
 
         if(!grouped[record._id]){
@@ -158,7 +160,7 @@ const report = async function(req,res){
             grouped[record._id].appointments.push(appoint._id)
         }    
     }
-    
+
     var placeHolder = {
         "PBI":0,
         "CG":0,
