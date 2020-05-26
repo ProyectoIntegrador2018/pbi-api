@@ -2,26 +2,26 @@ const Appointment = require('../models/appointment')
 const Record = require('../models/record')
 const User = require('../models/record')
 
-
 const createAppointment = function(req,res){
-    const appointment = new Appointment(req.body)
-    const nutritionist = req.nutritionist
-    appointment.nutritionist.name = nutritionist.name
-    appointment.nutritionist._id = nutritionist._id
-    nutritionist.appointments.push(appointment._id)
-    nutritionist.save().then(_=>{
-        appointment.save().then(()=>{
-            Record.findById(req.params.id).then((record)=>{
-                record.appointments.push(appointment._id)
-                record.save().then(()=>{
-                    return res.send({record:record,appointment:appointment})
-                }).catch((error)=>{
-                    console.log(error)
-                    return res.status(400).send({error:"Hubo un error, intentalo de nuevo"})
-                })
-            }).catch(error=>{
-                
-                return res.status(500).send({error:"No se pudo guardar la cita"})
+    const _nutriId = req.nutritionist._id
+    const _name = req.nutritionist.name + ' ' + req.nutritionist.surname
+    var appointment = new Appointment(req.body)
+    appointment.record = req.params.id
+    appointment.nutritionist = {
+        name: _name,
+        id: _nutriId
+    }
+    appointment.save().then(()=>{
+        Record.findById(req.params.id).then((record)=>{
+            if(!record){
+                return res.status(404).send({error:"Expediente no encontrado"})
+            }
+            record.appointments.push(appointment._id)
+            record.save().then(() => {
+                return res.send({ record: record, appointment: appointment })
+            }).catch((error) => {
+                console.log(error)
+                return res.status(400).send({ error: "Hubo un error, intentalo de nuevo" })
             })
         })
     }).catch(_=>{

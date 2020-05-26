@@ -97,7 +97,7 @@ router.post('/resetpassword', users.resetPassword)
 router.get('/resetpassword', users.getUserOnResetP)
 router.get('/validate', accounts.validateSession)
 router.get('/user', auth.authUser, function (req, res) {
-    res.send(req.user)
+  res.send(req.user)
 })
 
 // router.post('/logout', auth.authDual, logout.logout)
@@ -121,9 +121,9 @@ router.delete('/nutricion/records/:id', records.deleteRecord)
 
 // router.get('/nutricion/validate', nutritionists.validateSession)
 
-router.post('/nutricion/appointment/:id',auth.authNutri, appointment.createAppointment)
+router.post('/nutricion/appointment/:id', auth.authNutri, appointment.createAppointment)
 router.get('/nutricion/appointment/:id', appointment.getAppointment)
-router.get('/nutricion/appointments/span', appointment.getAppointmentsSpan)
+router.put('/nutricion/appointments/span', appointment.getAppointmentsSpan)
 router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
 router.put('/nutrcion/appointment/:id', appointment.updateAppointment)
