@@ -112,6 +112,7 @@ router.get('/nutricion/validate',nutritionists.validateSession)
 
 router.post('/nutricion/appointment/:id',auth.authNutri, appointment.createAppointment)
 router.get('/nutricion/appointment/:id',appointment.getAppointment)
+router.get('/nutricion/appointments/span', appointment.getAppointmentsSpan)
 router.get('/nutricion/appointments/:id',appointment.getAppointments)
 router.delete('/nutricion/  /:id',appointment.deleteAppointment)
 router.put('/nutrcion/appointment/:id',appointment.updateAppointment)

@@ -33,7 +33,7 @@ const getAppointment = function(req,res){
     const id = req.params.id
     Appointment.findById(id).then((appoint)=>{
         if(!appoint){
-            return res.status(400).send({error:"Cita no encontrada"})
+            return res.status(404).send({error:"Cita no encontrada"})
         }
         return res.send(appoint)
     }).catch(()=>{
@@ -88,10 +88,21 @@ const updateAppointment = function(req,res){
     })
 }
 
+const getAppointmentsSpan = function(req, res){
+    const _start = new Date(req.body.startDate)
+    const _end = new Date(req.body.endDate+'T23:59:59.000Z')
+    Appointment.find({'date': {$gte: _start, $lte: _end}}).populate('record').then(function(appointments){
+        res.send(appointments)
+    }).catch(function(error){
+        return res.status(500).send({error: error})
+    })
+}
+
 module.exports = {
     createAppointment:createAppointment,
     deleteAppointment:deleteAppointment,
     updateAppointment:updateAppointment,
     getAppointment:getAppointment,
-    getAppointments:getAppointments
+    getAppointments:getAppointments,
+    getAppointmentsSpan: getAppointmentsSpan
 }
