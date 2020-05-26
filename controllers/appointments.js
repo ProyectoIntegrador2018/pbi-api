@@ -23,12 +23,9 @@ const createAppointment = function(req,res){
                 console.log(error)
                 return res.status(400).send({ error: "Hubo un error, intentalo de nuevo" })
             })
-        }).catch(error => {
-            return res.status(500).send({ error: "No se pudo guardar la cita" })
         })
-    }).catch(error => {
-        console.log(error)
-        return res.status(500).send({ error: "Hubo un error. Revisa los valores" })
+    }).catch(_=>{
+        return res.status(500).send({error:"Hubo un error al guardar los datos"})
     })
 }
 

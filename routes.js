@@ -128,7 +128,10 @@ router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
 router.put('/nutrcion/appointment/:id', appointment.updateAppointment)
 
-router.get('*', function (req, res) {
+//Reportes
+router.post('/nutricion/report/:id', nutritionists.report)
+
+router.get('*', function(req, res) {
   res.send({
     error: 'This route does not exist'
   })
