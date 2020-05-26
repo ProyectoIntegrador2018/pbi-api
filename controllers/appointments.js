@@ -15,7 +15,6 @@ const createAppointment = function(req,res){
                 record.save().then(()=>{
                     return res.send({record:record,appointment:appointment})
                 }).catch((error)=>{
-                    console.log(error)
                     return res.status(400).send({error:"Hubo un error, intentalo de nuevo"})
                 })
             }).catch(error=>{

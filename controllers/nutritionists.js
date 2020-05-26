@@ -60,11 +60,10 @@ const getNutritionist = function (req, res) {
 // const changePassword = function (req, res) {
 //     const _id = req.params.id
 //     var _pwd = req.body.password
-    
-//     console.log(_pwd)
+
 //     bcrypt.hash(_pwd, SECRET).then(function(hash){
 //         _pwd = hash
-//         console.log(_pwd)
+// 
 //         Nutritionist.findByIdAndUpdate(_id, {password: _pwd}).then(function(nutritionist){
 //             if (!nutritionist) {
 //                 return res.status(404).send({ error: `El nutriólogo con id ${_id} no existe` })

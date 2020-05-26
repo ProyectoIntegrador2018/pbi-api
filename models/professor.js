@@ -175,7 +175,7 @@ const professorSchema = new mongoose.Schema({
 // 					return reject("No se pudo actualizar la contraseña")
 // 				})
 // 		} catch (e) {
-// 			//console.log(e)
+// 		
 // 			return reject("El enlace para reestablecer la contraseña es inválido")
 // 		}
 // 	})
@@ -198,16 +198,15 @@ const professorSchema = new mongoose.Schema({
 // }
 
 // professorSchema.statics.validateToken = function (token) {
-// 	//console.log("Validando")
+// 	
 // 	return new Promise(function (resolve, reject) {
 // 		try {
 // 			const decoded = jwt.verify(token, SECRET)
-// 			//console.log(decoded._id)
+// 			
 // 			User.findOne({ _id:	decoded._id, 'tokens.token':	token })
 // 				.then(function (professor) {
 // 					if (professor) {
 
-// 						//console.log(professor.isAdmin)
 // 						if (professor.isAdmin) {
 // 							resolve({ admin:	true })
 // 						} else {
@@ -221,7 +220,7 @@ const professorSchema = new mongoose.Schema({
 // 					reject(false)
 // 				})
 // 		} catch (error) {
-// 			//console.log("erorr!")
+// 		
 // 			reject(false)
 // 		}
 // 	})

@@ -26,7 +26,6 @@ const createTerm = function(req, res){
 
 const getTerms= function(_,res){
     Term.find({},function(err,terms){
-        console.log(terms)
         return res.send(terms)
     })
 }
@@ -147,9 +146,6 @@ const statusFlag = function(req,res){
         if(!term){
             return res.status(404).send({error : `El periodo con id ${_id} no existe.`})
         }
-
-        console.log("Inscription closeee: ", term.closeInscriptions)
-        console.log("Current date: ", currDate)
         
         const diffTimeLate = term.closeInscriptions - currDate
         const diffTimeEarly = currDate - term.startInscriptions

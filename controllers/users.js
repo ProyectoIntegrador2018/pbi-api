@@ -28,7 +28,7 @@ const getUsers = function(req, res) {
 
 const getUser = function(req, res) {
     User.findById( req.params.id ).populate('classes').exec(function(err, user) {
-        console.log(user)
+      
         return res.send(user)
     })
 }
@@ -37,7 +37,7 @@ const createUser = function(req, res){
   const user = new User(req.body)
   user.save().then(function() {
     user.generateConfirmToken().then(function(token){
-      console.log(token) 
+     
       //mailing(req.body.nomina,req.body.email,token)
       //return res.send(token)
       return res.send(user)
@@ -113,7 +113,7 @@ const fillMedicalRecord = function(req, res) {
         }
         return res.send(user)
     }).catch(function(error) {
-        console.log(error)
+     
         res.status(500).send({error:error})
     })
 }
@@ -126,7 +126,7 @@ const fillMedicalRecordAdmin = function(req, res) {
         }
         return res.send(user)
     }).catch(function(error) {
-        console.log(error)
+      
         res.status(500).send({error:error})
     })
 }
@@ -228,7 +228,7 @@ const requestResetPassword = function(req,res){
 
 const getUserOnResetP = function(req,res){
     const token = req.query.token
-    console.log(token)
+
     if(token){
         User.getUserOnTokenPass(token).then(function(user){
             return res.send(user)
@@ -368,12 +368,11 @@ function mailing(nomina, correo, token){
 </div></div>`
     },(error,info)=> {
         if(error){
-            console.log("Ocurrió un error");
-            console.log(error.message);
+        
             return;
         }
 
-        console.log("message sent succesfully")
+        //("message sent succesfully")
     })
 }
 
@@ -438,11 +437,10 @@ function mailResetPassword(correo,token){
 </div></div>`
     },(error,info)=> {
         if(error){
-            console.log("Ocurrió un error");
-            console.log(error.message);
+          
             return;
         }
 
-        console.log("message sent succesfully")
+        //log("message sent succesfully")
     })
 }
