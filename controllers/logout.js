@@ -43,7 +43,7 @@ const logout = async function (req, res) {
     }
 
     if (user) {
-        user.tokens.tokens.pull({ token: token.token })
+        user.tokens.tokens.pull({token: token.token})
         user.save().then(function () {
             return res.send(true)
         }).catch(function (error) {
@@ -52,7 +52,7 @@ const logout = async function (req, res) {
     }
 
     if (nutritionist) {
-        nutritionist.tokens.pull({ token: token.token })
+        nutritionist.tokens.pull({token: token.token})
         nutritionist.save().then(function () {
             return res.send(true)
         }).catch(function (error) {

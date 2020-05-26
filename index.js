@@ -14,6 +14,6 @@ app.use(router)
 
 
 
-app.listen(port, function () {
-    console.log('Server up and running on port ' + port)
+app.listen(port, function() {
+  console.log('Server up and running on port ' + port)
 })
