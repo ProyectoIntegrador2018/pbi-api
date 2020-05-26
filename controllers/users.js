@@ -28,7 +28,7 @@ const getUsers = function (req, res) {
 
 const getUser = function (req, res) {
     const _id = req.params.id
-    User.findById(_id).then(function (user) {
+    User.findById(_id).populate('classes').then(function (user) {
         if (!user) {
             return res.status(404).send({ error: `El usuario con id ${_id} no existe` })
         }
@@ -38,6 +38,7 @@ const getUser = function (req, res) {
     })
 }
 
+/*
 const createUser = function (req, res) {
     const user = new User(req.body)
     user.save().then(function () {
@@ -57,6 +58,7 @@ const createUser = function (req, res) {
         }
     })
 }
+*/
 
 const login = function (req, res) {
     User.findByCredentials(req.body.email, req.body.password).then(function (user) {
@@ -294,7 +296,6 @@ module.exports = {
     getUser: getUser,
     login: login,
     logout: logout,
-    createUser: createUser,
     updateUser: updateUser,
     fillMedicalRecord: fillMedicalRecord,
     fillMedicalRecordAdmin: fillMedicalRecordAdmin,

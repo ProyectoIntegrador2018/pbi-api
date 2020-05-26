@@ -41,7 +41,7 @@ router.put('/terms/classes/:id', auth.authAdmin, terms.deleteTermClasses)
 router.put('/terms/:id', auth.authAdmin, terms.updateTerm)
 router.get('/terms/status/:id', terms.statusFlag)
 
-router.get('/classes/user', auth.auth, classes.getUserClasses)
+router.get('/classes/user', auth.authUser, classes.getUserClasses)
 
 router.post('/classes/:id', auth.authAdmin, classes.createClass)
 router.put('/classes/:id', auth.authAdmin, classes.updateClass)
@@ -53,12 +53,12 @@ router.delete('/classes/:id', auth.authAdmin, classes.deleteClass)
 // router.put('/classes/attendance/mark/:id', classes.markAttendance)
 
 router.put('/classes/enroll/:id', auth.authAdmin, classes.enrollUser)
-router.put('/classes/enrollPayroll/user/:id', auth.auth, classes.enrollUser)
+router.put('/classes/enrollPayroll/user/:id', auth.authUser, classes.enrollUser)
 router.put('/classes/enrollPayroll/:id', auth.authAdmin, classes.enrollByPayroll)
 router.put('/classes/disenroll/user/:id', auth.authUser, classes.disenrollUser)
 router.put('/classes/disenroll/:id', auth.authAdmin, classes.disenrollUserByAdmin)
 
-router.post('/users', users.createUser)
+
 router.put('/users', auth.authUser, users.updateUser)
 router.put('/users/medicalRecord', auth.authUser, users.fillMedicalRecord)
 router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRecordAdmin)

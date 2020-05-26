@@ -256,17 +256,18 @@ const disenrollUserByAdmin = function (req, res) {
         if (!user) {
             return res.status(404).send({ error: `El usuario con id ${_userID} no existe.` })
         }
+        Class.findByIdAndUpdate(_classID, { $pull: { enrolled: _userID } }).then(function (course) {
+            if (!course) {
+                return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
+            }
+            return res.send(course)
+        }).catch(function (error) {
+            res.status(505).send({ error: error })
+        })
     }).catch(function (error) {
         res.status(505).send({ error: error })
     })
-    Class.findByIdAndUpdate(_classID, { $pull: { enrolled: _userID } }).then(function (course) {
-        if (!course) {
-            return res.status(404).send({ error: `La clase con id ${_classID} no existe.` })
-        }
-        return res.send(course)
-    }).catch(function (error) {
-        res.status(505).send({ error: error })
-    })
+
 }
 
 //SOLAMENTE REGRESA LAS CLASES DEL PERIODO ACTIVO 

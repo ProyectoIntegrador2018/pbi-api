@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const validator = require('validator')
 
 if (process.env.NODE_ENV === 'production') {
     var SECRET = process.env.SECRET;
