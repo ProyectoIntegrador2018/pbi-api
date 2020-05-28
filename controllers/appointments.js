@@ -1,15 +1,17 @@
 const Appointment = require('../models/appointment')
 const Record = require('../models/record')
+const Nutritionist = require("../models/nutritionist")
 const User = require('../models/record')
 
 const createAppointment = function(req,res){
     const _nutriId = req.nutritionist._id
+    const nutri = req.nutritionist
     const _name = req.nutritionist.name + ' ' + req.nutritionist.surname
     var appointment = new Appointment(req.body)
     appointment.record = req.params.id
     appointment.nutritionist = {
         name: _name,
-        id: _nutriId
+        _id: _nutriId
     }
     appointment.save().then(()=>{
         Record.findById(req.params.id).then((record)=>{
@@ -18,13 +20,17 @@ const createAppointment = function(req,res){
             }
             record.appointments.push(appointment._id)
             record.save().then(() => {
-                return res.send({ record: record, appointment: appointment })
+                nutri.appointments.push(appointment._id)
+                nutri.save().then(()=>{
+                    return res.send({ record: record, appointment: appointment })
+                }).catch(()=>{
+                    return res.status(400).send({ error: "Hubo un error, intentalo de después" })
+                })
             }).catch((error) => {
-                console.log(error)
                 return res.status(400).send({ error: "Hubo un error, intentalo de nuevo" })
             })
         })
-    }).catch(_=>{
+    }).catch(error=>{
         return res.status(500).send({error:"Hubo un error al guardar los datos"})
     })
 }
