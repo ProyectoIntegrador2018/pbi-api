@@ -18,6 +18,24 @@ const professorSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error('Correo inválido')
+            }
+        }
+    },
+    departamento: {
+        type: String,
+        default: ""
+    },
+    rectoria: {
+        type: String,
+        default: ""
+    },
     campus: {
         type: String,
     },

@@ -25,6 +25,24 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error('Correo inválido')
+            }
+        }
+    },
+    departamento: {
+        type: String,
+        default: ""
+    },
+    rectoria: {
+        type: String,
+        default: ""
     }
 }, {
     toObject: {
