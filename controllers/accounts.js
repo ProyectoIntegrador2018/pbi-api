@@ -4,6 +4,8 @@ const Admin = require('../models/admin')
 const Professor = require('../models/professor')
 const Nutritionist = require('../models/nutritionist')
 
+const bcrypt = require('bcryptjs')
+
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
     var EMAIL = process.env.EMAIL;
@@ -96,6 +98,11 @@ const logout = function (req, res) {
 
 const updateAccount = function (req, res) {
     const _id = req.account._id
+    if(req.body.password){
+        var _pwd = req.body.password
+    } else{
+        var _pwd = ""
+    }
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'surname', 'password', 'departamento', 'rectoria']
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
@@ -105,12 +112,24 @@ const updateAccount = function (req, res) {
             error: 'Invalid update, only allowed to update: ' + allowedUpdates
         })
     }
-    Account.findByIdAndUpdate(_id, req.body).then(function (account) {
-        if (!account) {
-            return res.status(404).send()
+
+    var query = req.body
+    bcrypt.hash(_pwd, 8).then(function (hash) {
+        if (req.body.password) {
+            query.password = hash
         }
-        return res.send(account)
+        Account.findByIdAndUpdate(_id, query).then(function (account) {
+            if (!account) {
+                console.log("Error 404")
+                return res.status(404).send(error)
+            }
+            return res.send(account)
+        }).catch(function (error) {
+            console.log("Error en account")
+            return res.status(500).send(error)
+        })
     }).catch(function (error) {
+        console.log("Error en bcrypt")
         return res.status(500).send(error)
     })
 }
@@ -134,7 +153,10 @@ const switchAdmin = async function (req, res) {
                 account: account._id,
                 name: account.name,
                 surname: account.surname,
-                nomina: account.nomina
+                nomina: account.nomina,
+                email: account.email,
+                departamento: account.departamento,
+                rectoria: account.rectoria
             })
             account.adminAcc = admin._id
         }
