@@ -4,6 +4,8 @@ const Admin = require('../models/admin')
 const Professor = require('../models/professor')
 const Nutritionist = require('../models/nutritionist')
 
+const bcrypt = require('bcryptjs')
+
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
     var EMAIL = process.env.EMAIL;
@@ -94,25 +96,49 @@ const logout = function (req, res) {
     })
 }
 
-const updateAccount = function (req, res) {
+const updateAccount = async function (req, res) {
     const _id = req.account._id
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'surname', 'password', 'departamento', 'rectoria']
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
-
+    
     if (!isValidUpdate) {
         return res.status(400).send({
             error: 'Invalid update, only allowed to update: ' + allowedUpdates
         })
     }
-    Account.findByIdAndUpdate(_id, req.body).then(function (account) {
-        if (!account) {
-            return res.status(404).send()
-        }
+    
+    var account = await Account.findByIdAndUpdate(_id, req.body)
+    if (!account) {
+        return res.status(404).send(error)
+    }
+    
+    var user = await User.findByIdAndUpdate(req.account.userAcc, req.body)
+    user.save()
+    if(req.account.isAdmin){
+        var admin = await Admin.findByIdAndUpdate(req.account.adminAcc, req.body)
+        admin.save()
+    }
+    if(req.account.isNutri){
+        var nutritionist = await Nutritionist.findByIdAndUpdate(req.account.nutriAcc, req.body)
+        nutritionist.save()
+    }
+    if(req.account.isProf){
+        var professor = await Professor.findByIdAndUpdate(req.account.profAcc, req.body)
+        professor.save()
+    }
+    
+    const _hash = await bcrypt.hash(req.body.password, 8)
+    if(_hash){
+        account.password = _hash
+    }
+
+    account.save().then(function (){
         return res.send(account)
     }).catch(function (error) {
         return res.status(500).send(error)
     })
+    
 }
 
 const switchAdmin = async function (req, res) {
@@ -134,7 +160,10 @@ const switchAdmin = async function (req, res) {
                 account: account._id,
                 name: account.name,
                 surname: account.surname,
-                nomina: account.nomina
+                nomina: account.nomina,
+                email: account.email,
+                departamento: account.departamento,
+                rectoria: account.rectoria
             })
             account.adminAcc = admin._id
         }
@@ -178,7 +207,10 @@ const switchNutritionist = async function (req, res) {
                 account: account._id,
                 name: account.name,
                 surname: account.surname,
-                nomina: account.nomina
+                nomina: account.nomina,
+                email: account.email,
+                departamento: account.departamento,
+                rectoria: account.rectoria
             })
             account.nutriAcc = nutritionist._id
         }
@@ -222,11 +254,14 @@ const switchProfessor = async function (req, res) {
                 account: account._id,
                 name: account.name,
                 surname: account.surname,
-                nomina: account.nomina
+                nomina: account.nomina,
+                email: account.email,
+                departamento: account.departamento,
+                rectoria: account.rectoria
             })
             account.profAcc = professor._id
         }
-        account.isNutri = true
+        account.isProf = true
         account.save().then(function () {
             professor.save().then(function () {
                 return res.send(account)
