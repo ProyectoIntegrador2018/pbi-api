@@ -318,14 +318,16 @@ const switchStatus = async function (req, res) {
             if (cabin.status == 'Asignado') {
                 var user = await User.findById(cabin.assignee)
                 if (user) {
-                    cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                    var result
                     user.locker = null
-                    user.save().then(function () {
-                        cabin.status = 'Disponible'
-                        cabin.assignee = null
-                    }).catch(function (error) {
+                    result = user.save().catch(function (error) {
                         res.status(505).send({ error: error })
                     })
+                    if(result){
+                        cabin.status = 'Disponible'
+                        cabin.assignee = null
+                        cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                    }
                 } else {
                     cabin.status = 'Disponible'
                 }
