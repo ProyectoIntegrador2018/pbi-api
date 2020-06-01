@@ -258,9 +258,9 @@ const assignCabin = async function (req, res) {
     const _cabID = req.params.id
     const _userID = req.body.id
 
-    const user = await User.findById(_userID)
+    const user = await User.findOne({nomina:_userID})
     if (!user) {
-        return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+        return res.status(404).send({ error: `El usuario con Nómmina ${_userID} no existe` })
     }
     if (user.locker) {
         console.log(user.locker)
