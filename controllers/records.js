@@ -3,13 +3,13 @@ const Nutritionist = require("../models/nutritionist")
 
 const createRecord = async function (req, res) {
     var _nutrID
-    
+
     if (req.nutritionist) {
         _nutrID = req.nutritionist._id
     } else {
         _nutrID = req.body.id
     }
-    
+
     var nutritionist = await Nutritionist.findById(_nutrID)
     if (!nutritionist) {
         return res.status(404).send({ error: `El nutriólogo con id ${_nutrID} no existe` })
@@ -20,7 +20,6 @@ const createRecord = async function (req, res) {
     record.save().then(() => {
         nutritionist.records.push(record)
         nutritionist.save().then(() => {
-            console.log(nutritionist)
             return res.send(record)
         })
     })
@@ -85,7 +84,6 @@ const addReminder = function (req, res) {
             return res.status(400).send({ "error": "No es encontró el registro" })
         }
         record["dayReminder"] = req.body
-        console.log(record)
         record.save().then((saved) => {
             return res.send(saved)
         }).catch(() => {
@@ -95,6 +93,7 @@ const addReminder = function (req, res) {
         return res.status(500).send({ error: "Hubo un error al gardar los datos" })
     })
 }
+
 
 module.exports = {
     createRecord: createRecord,

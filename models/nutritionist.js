@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 
 if (process.env.NODE_ENV === 'production') {
     var SECRET = process.env.SECRET;
@@ -50,7 +48,7 @@ const nutritionistSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectID,
         ref: 'Record'
     }],
-    appointments:[{
+    appointments: [{
         type: mongoose.Schema.Types.ObjectID,
         ref: 'Appointment'
     }

@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator')
+const mongoose = require('mongoose')
 
 const cabinSchema = new mongoose.Schema({
     campus: {
@@ -27,6 +26,7 @@ const cabinSchema = new mongoose.Schema({
         ref: 'User'
     }
 })
+
 
 const Cabin = mongoose.model('Cabin', cabinSchema)
 module.exports = Cabin

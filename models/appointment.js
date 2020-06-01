@@ -2,20 +2,20 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 
 const appointmentSchema = new mongoose.Schema({
-    record:{
+    record: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Record'
     },
-    nutritionist:{
-        name:{
+    nutritionist: {
+        name: {
             type: String
         },
-        id:{
+        id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Nutritionist'
         }
     },
-    date:{
+    date: {
         type: Date,
         required: true
     },
@@ -73,18 +73,19 @@ const appointmentSchema = new mongoose.Schema({
     notes: {
         type: String
     },
-    nutritionist:{
-        name:{
+    nutritionist: {
+        name: {
             type: String,
             required: true
         },
-        _id:{
+        _id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'Nutritionist'
         }
     }
 })
+
 
 const Appointment = mongoose.model('Appointment', appointmentSchema)
 module.exports = Appointment

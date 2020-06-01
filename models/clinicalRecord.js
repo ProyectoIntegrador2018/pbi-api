@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 const clinicalRecordSchema = new mongoose.Schema({
-
     insuranceCompany: {
         type: String,
         required: true,

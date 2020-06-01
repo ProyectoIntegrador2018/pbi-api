@@ -13,7 +13,6 @@ app.use(express.json()) // parsea a json
 app.use(router)
 
 
-
 app.listen(port, function () {
     console.log('Server up and running on port ' + port)
 })

@@ -12,7 +12,6 @@ const professors = require('./controllers/professors.js')
 const records = require('./controllers/records.js')
 const nutritionists = require('./controllers/nutritionists.js')
 const appointment = require('./controllers/appointments.js')
-const logout = require('./controllers/logout.js')
 const accounts = require('./controllers/accounts.js')
 
 router.all('*', cors())
@@ -28,21 +27,19 @@ router.put('/accounts/status/admin/:id', auth.authAdmin, accounts.switchAdmin)
 router.put('/accounts/status/nutritionist/:id', auth.authAdmin, accounts.switchNutritionist)
 router.put('/accounts/status/professor/:id', auth.authAdmin, accounts.switchProfessor)
 
-
+// Rutas PBI
 router.post('/terms', auth.authAdmin, terms.createTerm)
 router.get('/terms/classes/:id', terms.getTermClasses)
 router.get('/terms/current', terms.getCurrentTerm)
 router.put('/terms/current/:id', auth.authAdmin, terms.setCurrentTerm)
 router.get('/terms/:id', terms.getTermByID)
 router.get('/terms', terms.getTerms)
-
 router.delete('/terms/:id', auth.authAdmin, terms.deleteTerm)
 router.put('/terms/classes/:id', auth.authAdmin, terms.deleteTermClasses)
 router.put('/terms/:id', auth.authAdmin, terms.updateTerm)
 router.get('/terms/status/:id', terms.statusFlag)
 
 router.get('/classes/user', auth.authUser, classes.getUserClasses)
-
 router.post('/classes/:id', auth.authAdmin, classes.createClass)
 router.put('/classes/:id', auth.authAdmin, classes.updateClass)
 router.post('/classesMass/:id', auth.authAdmin, classes.createClasses)
@@ -51,13 +48,11 @@ router.get('/classes/:id', classes.getClassByID)
 router.delete('/classes/:id', auth.authAdmin, classes.deleteClass)
 // router.put('/classes/attendance/add/:id', classes.addAttendance)
 // router.put('/classes/attendance/mark/:id', classes.markAttendance)
-
 router.put('/classes/enroll/:id', auth.authAdmin, classes.enrollUser)
 router.put('/classes/enrollPayroll/user/:id', auth.authUser, classes.enrollUser)
 router.put('/classes/enrollPayroll/:id', auth.authAdmin, classes.enrollByPayroll)
 router.put('/classes/disenroll/user/:id', auth.authUser, classes.disenrollUser)
 router.put('/classes/disenroll/:id', auth.authAdmin, classes.disenrollUserByAdmin)
-
 
 router.put('/users', auth.authUser, users.updateUser)
 router.put('/users/medicalRecord', auth.authUser, users.fillMedicalRecord)
@@ -65,6 +60,9 @@ router.put('/admin/users/medicalRecord/:id', auth.authAdmin, users.fillMedicalRe
 router.put('/admin/users/:id', auth.authAdmin, users.updateUserByAdmin)
 router.delete('/users/:id', auth.authAdmin, users.deleteUser)
 router.get('/users/attendance/:id', auth.authUser, users.getAttendance)
+router.get('/users', auth.authAdmin, users.getUsers)
+router.put('/user', auth.authUser, users.updateUser)
+router.get('/users/:id', auth.authAdmin, users.getUser)
 
 router.post('/lockers', auth.authAdmin, lockers.createLocker)
 router.get('/lockers', lockers.getLockers)
@@ -87,11 +85,6 @@ router.get('/professors/:id', professors.getProfessor)
 router.put('/professors/:id', professors.updateProfessor)
 router.delete('/professors/:id', professors.deleteProfessor)
 
-// router.post('/login', users.login)
-// router.post('/logout', auth.auth, users.logout)
-router.get('/users', auth.authAdmin, users.getUsers)
-router.put('/user', auth.authUser, users.updateUser)
-router.get('/users/:id', auth.authAdmin, users.getUser)
 router.post('/confirm', users.userConfirm)
 router.post('/confirm/retry', users.resendConfirm)
 router.post('/requestreset', users.requestResetPassword)
@@ -102,13 +95,10 @@ router.get('/user', auth.authUser, function (req, res) {
   res.send(req.user)
 })
 
-// router.post('/logout', auth.authDual, logout.logout)
-
-////RUTAS NUTRICIÓN////
+// Rutas Nutricion
 router.post('/nutricion/nutritionist', nutritionists.createNutritionist)
 router.get('/nutricion/nutritionists', nutritionists.getNutritionists)
 router.get('/nutricion/nutritionist/:id', nutritionists.getNutritionist)
-// router.post('/nutricion/password/:id', auth.authAdmin, nutritionists.changePassword)
 router.post('/nutricion/login', nutritionists.login)
 router.post('/nutricion/logout', auth.authNutri, nutritionists.logout)
 router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
@@ -121,8 +111,6 @@ router.get('/nutricion/records/:id', records.getRecord)
 router.put('/nutricion/records/:id', records.editRecord)
 router.delete('/nutricion/records/:id', records.deleteRecord)
 
-// router.get('/nutricion/validate', nutritionists.validateSession)
-
 router.post('/nutricion/appointment/:id', auth.authNutri, appointment.createAppointment)
 router.get('/nutricion/appointment/:id', appointment.getAppointment)
 router.put('/nutricion/appointments/span', appointment.getAppointmentsSpan)
@@ -130,7 +118,6 @@ router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
 router.put('/nutrcion/appointment/:id', appointment.updateAppointment)
 
-//Reportes
 router.post('/nutricion/report/:id', nutritionists.report)
 
 router.get('*', function(req, res) {

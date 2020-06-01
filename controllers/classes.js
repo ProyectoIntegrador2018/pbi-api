@@ -24,7 +24,6 @@ const createClass = function (req, res) {
         clase.term = term.name + " " + term.year
         clase.save().then(function () {
             term.classes.push(clase._id)
-            //console.log(clase)
             term.save().then(function () {
                 return res.send(clase)
             })
@@ -41,7 +40,6 @@ const createClasses = function (req, res) {
     var idClasses = []
     const data = req.body
     const idTerm = req.params.id
-    //console.log(idClasses)
     Term.findById(idTerm, function (err, term) {
         data.forEach(function (clase) {
             const newClass = new Class(clase)
@@ -113,7 +111,6 @@ const deleteClass = function (req, res) {
 
 const getClasses = function (req, res) {
     Class.find({}, function (err, classes) {
-        //console.log(classes)
         return res.send(classes)
     })
 }
@@ -121,7 +118,6 @@ const getClasses = function (req, res) {
 const getClassByID = function (req, res) {
     const _id = req.params.id
     Class.findById(_id).populate('enrolled').exec(function (err, clase) {
-        //console.log(clase)
         if (!clase) {
             return res.status(500).send({ error: "La clase no existe" })
         }
@@ -316,14 +312,12 @@ const addAttendance = async function (req, res) {
         var _enrolled = []
         for (var i = 0; i < course.enrolled.length; i++) {
             var _userID = course.enrolled[i]
-            console.log(_userID)
             var user = await User.findById(_userID)
             if (!user) {
                 return res.status(404).send({ error: `El usuario con id ${_userID} no existee` })
             }
             var ind = -1
             for (var j = 0; j < user.attendance.length; j++) {
-                console.log(user.attendance[j].class + '-' + _classID)
                 if (user.attendance[j].class == _classID) {
                     ind = j
                 }
@@ -342,7 +336,6 @@ const addAttendance = async function (req, res) {
                 assistance: false
             })
             user.save().then(function () {
-                console.log(user)
             }).catch(function (error) {
                 res.status(505).send({ error: error })
             })

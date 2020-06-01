@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
             default: 0
         },
         // birthDate:{
-        //     type:        Date
+        //     type: Date
         // },
         insuranceCompany: {
             type: String,

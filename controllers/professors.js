@@ -56,9 +56,7 @@ const deleteProfessor = async function (req, res) {
         const _len = professor.classes.length
         const classes = professor.classes
         for (var i = 0; i < _len; i++) {
-            Class.findByIdAndUpdate(classes[i], { instructor: null }).then(function (course) {
-                console.log(`Se elimino al profesor de la clase con id ${_classes[i]}`)
-            }).catch(function (error) {
+            Class.findByIdAndUpdate(classes[i], { instructor: null }).catch(function (error) {
                 res.status(500).send({ error: error })
             })
         }
@@ -67,6 +65,7 @@ const deleteProfessor = async function (req, res) {
         res.status(500).send({ error: error })
     })
 }
+
 
 module.exports = {
     createProfessor: createProfessor,

@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require('mongoose')
 
 const termSchema = new mongoose.Schema({
     name: {
@@ -35,6 +34,7 @@ const termSchema = new mongoose.Schema({
         default: false
     }
 })
+
 
 const Term = mongoose.model('Term', termSchema)
 module.exports = Term
