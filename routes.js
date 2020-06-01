@@ -28,7 +28,6 @@ router.put('/accounts/status/admin/:id', auth.authAdmin, accounts.switchAdmin)
 router.put('/accounts/status/nutritionist/:id', auth.authAdmin, accounts.switchNutritionist)
 router.put('/accounts/status/professor/:id', auth.authAdmin, accounts.switchProfessor)
 
-
 router.post('/terms', auth.authAdmin, terms.createTerm)
 router.get('/terms/classes/:id', terms.getTermClasses)
 router.get('/terms/current', terms.getCurrentTerm)
