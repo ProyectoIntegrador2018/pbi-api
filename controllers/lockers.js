@@ -189,7 +189,7 @@ const removeCabins = async function (req, res) {
             if (!user) {
                 return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
             }
-            // Mandar correo confirmacion
+            cancelCabinMail(user.name,user.email,user.nomina,cabin)
             user.locker = null
             user.save().then(function () {
                 console.log(`El casillero tiene un usuario asignado`)
@@ -345,14 +345,16 @@ const switchStatus = async function (req, res) {
             if (cabin.status == 'Asignado') {
                 var user = await User.findById(cabin.assignee)
                 if (user) {
-                    // Enviar correo de desasignado
+                    var result
                     user.locker = null
-                    user.save().then(function () {
-                        cabin.status = 'Disponible'
-                        cabin.assignee = null
-                    }).catch(function (error) {
+                    result = user.save().catch(function (error) {
                         res.status(505).send({ error: error })
                     })
+                    if(result){
+                        cabin.status = 'Disponible'
+                        cabin.assignee = null
+                        cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                    }
                 } else {
                     cabin.status = 'Disponible'
                 }
@@ -388,8 +390,8 @@ const deleteLocker = async function (req, res) {
             }
             user.locker = null
             user.save().then(function () {
-                // Mandar correo al usuario
-                return res.send(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID}`)
+                cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                return res.send(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID} y se le ha desasignado`)
             })
         }
     }
@@ -490,8 +492,8 @@ function mailing(name, correo, nomina, locker) {
                 <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
                 <ul>
                     <li><span style="font-size:16pt">Vestidor Seleccionado: ${locker.dresser}</li>
-                    <li><span style="font-size:16pt">Número de casillero:${locker.number}</span></li>
-                    <li><span style="font-size:16pt">Costo:${"$" + locker.cost}</span></li>
+                    <li><span style="font-size:16pt">Número de casillero: ${locker.number}</span></li>
+                    <li><span style="font-size:16pt">Costo: ${"$"+locker.cost}</span></li>
                 </ul>
                 </div>
             <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
@@ -527,6 +529,86 @@ function mailing(name, correo, nomina, locker) {
             console.log("message sent succesfully")
         })
     } catch (error) {
+        console.log(error)
+    }
+}
+
+function cancelCabinMail(name, correo, nomina,locker) {
+    try{
+        const nodemailer = require('nodemailer')
+        const mailTransport = nodemailer.createTransport({
+            host: HOST,
+            port: MAILPORT,
+            secure: SECURE,
+            auth: {
+                user: EMAIL,
+                pass: KEY
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        })
+
+
+        const info = mailTransport.sendMail({
+            from: `Inscripciones PBI <${EMAIL}>`,
+            //bcc: "", para una lista de remitentes
+            to: correo,
+            subject: "Cancelación de Reservación de Casillero",
+            html: `</style>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+                <b style="font-size:12pt; font-style:inherit; font-variant-ligatures:inherit; font-variant-caps:inherit">
+                    PBI - Cancelación de Reservación de Casillero
+                </b><br>
+            </div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+                <span><br>
+                </span></div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+            <i><u>${name}</u></i>, <i><u>${nomina}</u></i> , un administrador ha cancelado tu reservación de tu casillero:<br>
+            </div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+                <span><br>
+                </span></div>
+                <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+                <ul>
+                    <li><span style="font-size:16pt">Vestidor: ${locker.dresser}</li>
+                    <li><span style="font-size:16pt">Número de casillero: ${locker.number}</span></li>
+                </ul>
+                </div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+            <span><br>
+            </span></div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+            <span><span>Si crees que esto ha sido un herro favor de ponerse en contacto. Atentamente&nbsp;</span></span></div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+            <span><span> <img src="http://web7.mty.itesm.mx/temporal/pbi/bienestar.gif" alt="Programa de Bienestar Integral" width="165"
+            height="136"></span></span></div>
+            <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
+            </span><span>Coordinación del Programa de Bienestar Integral</span><br>
+            <p class="x_MsoNormal"><span style="font-size:14.0pt; color:#002060">Lic. Sandra Nohemí Ramos Hernández</span><span style="font-size:14.0pt; font-family:&quot;Times New Roman&quot;,serif; color:#002060"></span></p>
+    <p class="x_MsoNormal"><b><span style="color:#0070C0">Coordinación del Programa Bienestar Integral</span></b><span style="color:#1F497D"></span></p>
+    <p class="x_MsoNormal"><span style="color:#1F497D">Bienestar Integral</span></p>
+    <p class="x_MsoNormal"><span style="color:#1F497D">LIFE</span></p>
+    <p class="x_MsoNormal"><span style="color:#1F497D">Campus Monterrey</span></p>
+    <p class="x_MsoNormal"><span style="color:#1F497D">Tecnológico de Monterrey</span></p>
+    <p class="x_MsoNormal"><span style="color:#1F497D">Tel. 52 (8</span><span lang="EN-US" style="color:#1F497D">1) 8358 - 2000; ext. 3651</span></p>
+    <p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D">&nbsp;</span></p>
+    <p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D"><a href="http://tecdeportes.mty.itesm.mx/" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span lang="ES-MX" style="color:#1155CC">http://tecdeportes.mty.itesm.mx/</span></a></span></p>
+    <p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D"><a href="mailto:pbi.mty@servicios.itesm.mx" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:blue">pbi.mty@servicios.itesm.mx</span></a></span></p>
+    <p class="x_MsoNormal">&nbsp;</p>
+    </div>
+            </div>`
+        }, (error, info) => {
+            if (error) {
+                console.log("Ocurrió un error");
+                console.log(error.message);
+                return;
+            }
+
+            console.log("message sent succesfully")
+        })
+    }catch(error){
         console.log(error)
     }
 }
