@@ -26,7 +26,7 @@ const createTerm = function (req, res) {
 
 const getTerms = function (_, res) {
     Term.find({}, function (err, terms) {
-        console.log(terms)
+    
         return res.send(terms)
     })
 }
@@ -141,23 +141,36 @@ const updateTerm = function (req, res) {
 
 const statusFlag = function (req, res) {
     const _id = req.params.id
+    const dateOfLockers = req.params.dateOfLockers
     var currDate = new Date()
     currDate = moment()._d;
+
     Term.findById(_id).then(function (term) {
         if (!term) {
             return res.status(404).send({ error: `El periodo con id ${_id} no existe.` })
         }
+        if(dateOfLockers === 'true'){
+            var dateClose = term.closeLockerReservations
+            var dateOpen = term.startLockerReservations
+             //console.log("Reservacion close: ", dateClose)
+           
+        }else {
+            var dateClose = term.closeInscriptions
+            var dateOpen  = term.startInscriptions 
+             //console.log("Inscripcion close: ", dateClose)
+        }   
+       
+        //console.log("Current date: ", currDate)
 
-        console.log("Inscription closeee: ", term.closeInscriptions)
-        console.log("Current date: ", currDate)
-
-        const diffTimeLate = term.closeInscriptions - currDate
-        const diffTimeEarly = currDate - term.startInscriptions
+        const diffTimeLate = dateClose - currDate
+        const diffTimeEarly = currDate - dateOpen
         if (diffTimeLate <= 0 || diffTimeEarly < 0) {
             return res.send({ status: false })
         } else {
             return res.send({ status: true })
         }
+    }).catch(function (error) {
+        res.status(500).send(error)
     })
 }
 

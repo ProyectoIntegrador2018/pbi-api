@@ -38,7 +38,7 @@ router.get('/terms', terms.getTerms)
 router.delete('/terms/:id', auth.authAdmin, terms.deleteTerm)
 router.put('/terms/classes/:id', auth.authAdmin, terms.deleteTermClasses)
 router.put('/terms/:id', auth.authAdmin, terms.updateTerm)
-router.get('/terms/status/:id', terms.statusFlag)
+router.get('/terms/status/:id/:dateOfLockers', terms.statusFlag)
 
 router.get('/classes/user', auth.authUser, classes.getUserClasses)
 
@@ -127,7 +127,7 @@ router.get('/nutricion/appointment/:id', appointment.getAppointment)
 router.put('/nutricion/appointments/span', appointment.getAppointmentsSpan)
 router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
-router.put('/nutrcion/appointment/:id', appointment.updateAppointment)
+router.put('/nutricion/appointment/:id', appointment.updateAppointment)
 
 //Reportes
 router.post('/nutricion/report/:id', nutritionists.report)
