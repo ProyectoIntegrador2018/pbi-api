@@ -254,9 +254,9 @@ const assignCabin = async function (req, res) {
     const _cabID = req.params.id
     const _userID = req.body.id
 
-    const user = await User.findById(_userID)
+    const user = await User.findOne({nomina:_userID})
     if (!user) {
-        return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+        return res.status(404).send({ error: `El usuario con Nómmina ${_userID} no existe` })
     }
     if (user.locker) {
         return res.status(400).send({ error: 'El usuario ya cuenta con un casillero' })
@@ -266,13 +266,13 @@ const assignCabin = async function (req, res) {
     if (!cabin) {
         return res.status(404).send({ error: 'No hay casilleros disponibles' })
     }
-    if (cabin.assignee) {
+    if(cabin.assignee){
         return res.status(400).send({ error: 'El casillero ya se encuentra asignado a un usuario' })
     }
 
     if (cabin.status == 'Disponible') {
         cabin.status = 'Asignado'
-        cabin.assignee = _userID
+        cabin.assignee = user._id
         cabin.save().then(function () {
             user.locker = _cabID
             user.save().then(function () {
