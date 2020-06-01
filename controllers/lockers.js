@@ -340,7 +340,7 @@ const switchStatus = async function (req, res) {
             if (cabin.status == 'Asignado') {
                 var user = await User.findById(cabin.assignee)
                 if (user) {
-                    // Enviar correo de desasignado
+                    var result
                     user.locker = null
                     result = user.save().catch(function (error) {
                         res.status(505).send({ error: error })

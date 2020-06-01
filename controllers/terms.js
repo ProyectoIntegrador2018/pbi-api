@@ -140,8 +140,10 @@ const updateTerm = function (req, res) {
 
 const statusFlag = function (req, res) {
     const _id = req.params.id
+    const dateOfLockers = req.params.dateOfLockers
     var currDate = new Date()
     currDate = moment()._d;
+
     Term.findById(_id).then(function (term) {
         if (!term) {
             return res.status(404).send({ error: `El periodo con id ${_id} no existe.` })
@@ -161,6 +163,8 @@ const statusFlag = function (req, res) {
         } else {
             return res.send({ status: true })
         }
+    }).catch(function (error) {
+        res.status(500).send(error)
     })
 }
 

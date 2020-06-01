@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Class = require('../models/class')
+const Account = require('../models/account')
 
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
@@ -179,20 +180,6 @@ const resendConfirm = function (req, res) {
     })
 }
 
-const requestResetPassword = function (req, res) {
-    const email = req.body.email
-    User.findOne({ "email": email }).then(function (user) {
-        user.generateResetToken().then(function (token) {
-            mailResetPassword(email, token)
-            return res.send("OK")
-        }).catch(function (error) {
-            return res.status(400).send({ error: "No se pudo enviar el correo de cambio de contraseña" })
-        })
-    }).catch(function (error) {
-        return res.status(400).send({ error: "No hay una cuanta registrada con el e-mail introducido" })
-    })
-}
-
 const getUserOnResetP = function (req, res) {
     const token = req.query.token
     if (token) {
@@ -237,9 +224,7 @@ module.exports = {
     deleteUser: deleteUser,
     userConfirm: userConfirm,
     resendConfirm: resendConfirm,
-    requestResetPassword: requestResetPassword,
-    resetPassword: resetPassword,
-    getUserOnResetP: getUserOnResetP,
+
     // validateSession: validateSession,
     getAttendance: getAttendance
 }
@@ -283,76 +268,6 @@ function mailing(nomina, correo, token) {
         <ul>
         <li><span style="font-size:16pt">Haz click </span><a href="${frontURL}/confirm?token=${token}" target="_blank" title="Haz clic para confirmar cuenta"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para completar tu
         registro.</span></li></ul>
-        </div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <span><br>
-        </span></div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <span><span>Atentamente&nbsp;</span></span></div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <span><span> <img src="http://web7.mty.itesm.mx/temporal/pbi/bienestar.gif" alt="Programa de Bienestar Integral" width="165"
-        height="136"></span></span></div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        </span><span>Coordinación del Programa de Bienestar Integral</span><br>
-        <p class="x_MsoNormal"><span style="font-size:14.0pt; color:#002060">Lic. Sandra Nohemí Ramos Hernández</span><span style="font-size:14.0pt; font-family:&quot;Times New Roman&quot;,serif; color:#002060"></span></p>
-<p class="x_MsoNormal"><b><span style="color:#0070C0">Coordinación del Programa Bienestar Integral</span></b><span style="color:#1F497D"></span></p>
-<p class="x_MsoNormal"><span style="color:#1F497D">Bienestar Integral</span></p>
-<p class="x_MsoNormal"><span style="color:#1F497D">LIFE</span></p>
-<p class="x_MsoNormal"><span style="color:#1F497D">Campus Monterrey</span></p>
-<p class="x_MsoNormal"><span style="color:#1F497D">Tecnológico de Monterrey</span></p>
-<p class="x_MsoNormal"><span style="color:#1F497D">Tel. 52 (8</span><span lang="EN-US" style="color:#1F497D">1) 8358 - 2000; ext. 3651</span></p>
-<p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D">&nbsp;</span></p>
-<p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D"><a href="http://tecdeportes.mty.itesm.mx/" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span lang="ES-MX" style="color:#1155CC">http://tecdeportes.mty.itesm.mx/</span></a></span></p>
-<p class="x_MsoNormal"><span lang="EN-US" style="color:#1F497D"><a href="mailto:pbi.mty@servicios.itesm.mx" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:blue">pbi.mty@servicios.itesm.mx</span></a></span></p>
-<p class="x_MsoNormal">&nbsp;</p>
-</div></div>`
-    }, (error, info) => {
-        if (error) {
-            console.log("Ocurrió un error");
-            console.log(error.message);
-            return;
-        }
-
-        console.log("message sent succesfully")
-    })
-}
-
-function mailResetPassword(correo, token) {
-    const nodemailer = require('nodemailer')
-    const mailTransport = nodemailer.createTransport({
-        host: HOST,
-        port: MAILPORT,
-        secure: SECURE,
-        auth: {
-            user: EMAIL,
-            pass: KEY
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    })
-
-    const info = mailTransport.sendMail({
-        from: `Inscripciones PBI <${EMAIL}>`,
-        //bcc: "", para una lista de remitentes
-        to: correo,
-        subject: "Reestablecer Contraseña",
-        html: `</style>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <b style="font-size:12pt; font-style:inherit; font-variant-ligatures:inherit; font-variant-caps:inherit">Has solicitado cambiar la contraseña de tu cuenta del Sistema de Inscripciones PBI</b><br>
-        </div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <span><br>
-        </span></div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        Para completar el cambio de contraseña favor de seguir las siguientes instrucciones:<br>
-        </div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <span><br>
-        </span></div>
-        <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
-        <ul>
-        <li><span style="font-size:16pt">Haz click </span><a href="${frontURL}/newpassword?token=${token}" target="_blank" title="Reestablecer contrseña"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para continuar.</span></li></ul>
         </div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <span><br>

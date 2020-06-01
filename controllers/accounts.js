@@ -101,13 +101,12 @@ const updateAccount = async function (req, res) {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'surname', 'password', 'departamento', 'rectoria']
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update))
-
+    
     if (!isValidUpdate) {
         return res.status(400).send({
             error: 'Invalid update, only allowed to update: ' + allowedUpdates
         })
     }
-
     var account = await Account.findByIdAndUpdate(_id, req.body)
     if (!account) {
         return res.status(404).send(error)
@@ -138,7 +137,6 @@ const updateAccount = async function (req, res) {
     }).catch(function (error) {
         return res.status(500).send(error)
     })
-
 }
 
 const switchAdmin = async function (req, res) {
