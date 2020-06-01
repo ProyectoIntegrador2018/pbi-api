@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Class = require('../models/class')
+const Account = require('../models/account')
 
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
@@ -106,7 +107,18 @@ const updateUser = function (req, res) {
         if (!user) {
             return res.status(404).send()
         }
-        return res.send(user)
+        if(req.body.password){
+            
+                Account.findById(user.account).then((account)=>{
+                    account.password = req.body.password
+                    account.save().then(()=>{
+                        return res.send(user)
+                    })
+            })
+        }else{
+            return res.send(user)
+        }
+        
     }).catch(function (error) {
         res.status(500).send(error)
     })
