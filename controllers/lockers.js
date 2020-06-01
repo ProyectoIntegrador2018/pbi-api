@@ -117,7 +117,7 @@ const changeCost = async function (req, res) {
         }
         cabin.cost = locker.cost
         cabin = await cabin.save().catch(function (error) {
-           return res.status(505).send({ error: error })
+            return res.status(505).send({ error: error })
         })
         console.log(cabin.cost)
     }
@@ -206,12 +206,8 @@ const removeCabins = async function (req, res) {
 
 const assignLocker = async function (req, res) {
     const _lockID = req.params.id
-    var _userID
-    if (req.user) {
-        _userID = req.user._id
-    } else {
-        _userID = req.body.id
-    }
+    const _userID = req.user._id
+
 
     const user = await User.findById(_userID)
     if (!user) {
@@ -241,7 +237,7 @@ const assignLocker = async function (req, res) {
                 cabin.save().then(function () {
                     user.locker = _cabID
                     user.save().then(function () {
-                        mailing(user.name,user.email,user.nomina,cabin)
+                        mailing(user.name, user.email, user.nomina, cabin)
                         return res.send(cabin)
                     }).catch(function (error) {
                         return res.status(505).send({ error: error })
@@ -258,12 +254,50 @@ const assignLocker = async function (req, res) {
     }
 }
 
+const assignCabin = async function (req, res) {
+    const _cabID = req.params.id
+    const _userID = req.body.id
+
+    const user = await User.findById(_userID)
+    if (!user) {
+        return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+    }
+    if (user.locker) {
+        console.log(user.locker)
+        return res.status(400).send({ error: 'El usuario ya cuenta con un casillero' })
+    }
+
+    var cabin = await Cabin.findById(_cabID)
+    if (!cabin) {
+        return res.status(404).send({ error: 'No hay casilleros disponibles' })
+    }
+    if(cabin.assignee){
+        return res.status(400).send({ error: 'El casillero ya se encuentra asignado a un usuario' })
+    }
+
+    if (cabin.status == 'Disponible') {
+        cabin.status = 'Asignado'
+        cabin.assignee = _userID
+        cabin.save().then(function () {
+            user.locker = _cabID
+            user.save().then(function () {
+                mailing(user.name, user.email, user.nomina, cabin)
+                return res.send(cabin)
+            }).catch(function (error) {
+                return res.status(505).send({ error: error })
+            })
+        }).catch(function (error) {
+            return res.status(505).send({ error: error })
+        })
+    }
+}
+
 const unassignLocker = async function (req, res) {
     const _cabID = req.params.id
     var _userID
     if (req.user) {
         _userID = req.user._id
-    } else {
+    } else if (req.admin) {
         _userID = req.body.id
     }
 
@@ -284,6 +318,7 @@ const unassignLocker = async function (req, res) {
         cabin.status = 'Disponible'
         cabin.assignee = null
         cabin.save().then(function () {
+            // Enviar correo de desasignado
             return res.send(cabin)
         }).catch(function (error) {
             res.status(505).send({ error: error })
@@ -292,14 +327,6 @@ const unassignLocker = async function (req, res) {
         res.status(505).send({ error: error })
     })
 }
-
-// const assignByAdmin = function(req, res){
-//	 const _
-//}
-
-// const unassignByAdmin = function(req, res){
-
-//}
 
 const switchStatus = async function (req, res) {
     const _cabID = req.params.id
@@ -372,6 +399,41 @@ const deleteLocker = async function (req, res) {
     return res.send(locker)
 }
 
+const emptyLocker = async function (req, res) {
+    const _lockID = req.params.id
+    var locker = await Locker.findById(_lockID)
+    if (!locker) {
+        return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
+    }
+    
+    const _cnt = locker.count
+    for (var i = 0; i < _cnt; i++) {
+        var _cabID = locker.lockers[i]
+        var cabin = await Cabin.findById(_cabID)
+        if (!cabin) {
+            return res.status(404).send({ error: 'No hay casilleros disponibles' })
+        }
+        if (cabin.status == 'Asignado') {
+            var user = await User.findById(cabin.assignee)
+            if (!user) {
+                return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+            }
+            cabin.status = 'Disponible'
+            cabin.assignee = null
+            cabin.save().then(function(){
+                user.locker  = null
+                user.save().then(function () {
+                    console.log(cabin)
+                    // Enviar correo de desasignado
+                }).catch(function (error) {
+                    return res.status(505).send({ error: error })
+                })
+            })
+        }
+    }
+    return res.send(locker)
+}
+
 module.exports = {
     createLocker: createLocker,
     getLockers: getLockers,
@@ -382,14 +444,16 @@ module.exports = {
     addCabins: addCabins,
     removeCabins: removeCabins,
     assignLocker: assignLocker,
+    assignCabin: assignCabin,
     unassignLocker: unassignLocker,
     switchStatus: switchStatus,
-    deleteLocker: deleteLocker
+    deleteLocker: deleteLocker,
+    emptyLocker: emptyLocker
 }
 
 
-function mailing(name, correo, nomina,locker) {
-    try{
+function mailing(name, correo, nomina, locker) {
+    try {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
@@ -464,7 +528,7 @@ function mailing(name, correo, nomina,locker) {
 
             console.log("message sent succesfully")
         })
-    }catch(error){
+    } catch (error) {
         console.log(error)
     }
 }
