@@ -277,7 +277,7 @@ const assignCabin = async function (req, res) {
 
     if (cabin.status == 'Disponible') {
         cabin.status = 'Asignado'
-        cabin.assignee = _userID
+        cabin.assignee = user._id
         cabin.save().then(function () {
             user.locker = _cabID
             user.save().then(function () {
