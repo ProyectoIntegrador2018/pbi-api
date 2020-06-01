@@ -39,55 +39,6 @@ const getUser = function (req, res) {
     })
 }
 
-/*
-const createUser = function (req, res) {
-    const user = new User(req.body)
-    user.save().then(function () {
-        user.generateConfirmToken().then(function (token) {
-            console.log(token)
-            //mailing(req.body.nomina,req.body.email,token)
-            //return res.send(token)
-            return res.send(user)
-        })
-    }).catch((error) => {
-        if (error.errmsg.includes("nomina")) {
-            return res.status(400).send({ error: "Ya existe una cuenta con la nómina especificada" })
-        } else if (error.errmsg.includes("email")) {
-            return res.status(400).send({ error: "Ya existe una cuenta con el correo especificado" })
-        } else {
-            return res.status(400).send({ error: "Error desconocido" })
-        }
-    })
-}
-*/
-
-const login = function (req, res) {
-    User.findByCredentials(req.body.email, req.body.password).then(function (user) {
-        //if (user.confirmToken != "Confirmed") {
-        if (false) {
-            return res.status(401).send({ error: "No has confirmado tu cuenta, verifica tu correo electrónico", type: 2 })
-        }
-        user.generateToken().then(function (token) {
-            return res.send({ user, token })
-        }).catch(function (error) {
-            return res.status(401).send({ error: "Usuario o contraseña inválidoss", type: 1 })
-        })
-    }).catch(function (error) {
-        return res.status(401).send({ error: error, type: 1 })
-    })
-}
-
-const logout = function (req, res) {
-    req.user.tokens = req.user.tokens.filter(function (token) {
-        return token.token !== req.token
-    })
-    req.user.save().then(function () {
-        return res.send(true)
-    }).catch(function (error) {
-        return res.status(500).send({ error: error })
-    })
-}
-
 const updateUser = function (req, res) {
     const _id = req.user._id
     const updates = Object.keys(req.body)
@@ -107,18 +58,18 @@ const updateUser = function (req, res) {
         if (!user) {
             return res.status(404).send()
         }
-        if(req.body.password){
-            
-                Account.findById(user.account).then((account)=>{
-                    account.password = req.body.password
-                    account.save().then(()=>{
-                        return res.send(user)
-                    })
+        if (req.body.password) {
+
+            Account.findById(user.account).then((account) => {
+                account.password = req.body.password
+                account.save().then(() => {
+                    return res.send(user)
+                })
             })
-        }else{
+        } else {
             return res.send(user)
         }
-        
+
     }).catch(function (error) {
         res.status(500).send(error)
     })
@@ -132,7 +83,6 @@ const fillMedicalRecord = function (req, res) {
         }
         return res.send(user)
     }).catch(function (error) {
-        console.log(error)
         res.status(500).send({ error: error })
     })
 }
@@ -145,7 +95,6 @@ const fillMedicalRecordAdmin = function (req, res) {
         }
         return res.send(user)
     }).catch(function (error) {
-        console.log(error)
         res.status(500).send({ error: error })
     })
 }
@@ -233,7 +182,6 @@ const resendConfirm = function (req, res) {
 
 const getUserOnResetP = function (req, res) {
     const token = req.query.token
-    console.log(token)
     if (token) {
         User.getUserOnTokenPass(token).then(function (user) {
             return res.send(user)
@@ -244,17 +192,6 @@ const getUserOnResetP = function (req, res) {
         return res.status(400).send({ error: "Enlace inválido" })
     }
 }
-
-
-
-// const validateSession = function (req, res) {
-//     const token = req.query.token
-//     User.validateToken(token).then(function (data) {
-//         return res.send(data)
-//     }).catch(function () {
-//         return res.send(false)
-//     })
-// }
 
 const getAttendance = function (req, res) {
     const _classID = req.params.id
@@ -280,8 +217,6 @@ const getAttendance = function (req, res) {
 module.exports = {
     getUsers: getUsers,
     getUser: getUser,
-    login: login,
-    logout: logout,
     updateUser: updateUser,
     fillMedicalRecord: fillMedicalRecord,
     fillMedicalRecordAdmin: fillMedicalRecordAdmin,

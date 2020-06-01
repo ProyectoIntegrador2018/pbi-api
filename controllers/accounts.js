@@ -107,38 +107,36 @@ const updateAccount = async function (req, res) {
             error: 'Invalid update, only allowed to update: ' + allowedUpdates
         })
     }
-    
     var account = await Account.findByIdAndUpdate(_id, req.body)
     if (!account) {
         return res.status(404).send(error)
     }
-    
+
     var user = await User.findByIdAndUpdate(req.account.userAcc, req.body)
     user.save()
-    if(req.account.isAdmin){
+    if (req.account.isAdmin) {
         var admin = await Admin.findByIdAndUpdate(req.account.adminAcc, req.body)
         admin.save()
     }
-    if(req.account.isNutri){
+    if (req.account.isNutri) {
         var nutritionist = await Nutritionist.findByIdAndUpdate(req.account.nutriAcc, req.body)
         nutritionist.save()
     }
-    if(req.account.isProf){
+    if (req.account.isProf) {
         var professor = await Professor.findByIdAndUpdate(req.account.profAcc, req.body)
         professor.save()
     }
-    
+
     const _hash = await bcrypt.hash(req.body.password, 8)
-    if(_hash){
+    if (_hash) {
         account.password = _hash
     }
 
-    account.save().then(function (){
+    account.save().then(function () {
         return res.send(account)
     }).catch(function (error) {
         return res.status(500).send(error)
     })
-    
 }
 
 const switchAdmin = async function (req, res) {
@@ -291,7 +289,7 @@ const validateSession = function (req, res) {
     })
 }
 
-const requestResetPassword = function(req, res) {
+const requestResetPassword = function (req, res) {
     const email = req.body.email
     Account.findOne({ "email": email }).then(function (acc) {
         acc.generateResetToken().then(function (token) {
@@ -319,10 +317,8 @@ const resetPassword = function (req, res) {
     }
 }
 
-
 const getUserOnResetP = function (req, res) {
     const token = req.query.token
-    console.log(token)
     if (token) {
         Account.getAccountOnTokenPass(token).then(function (acc) {
             return res.send(acc)
@@ -346,11 +342,10 @@ module.exports = {
     switchNutritionist: switchNutritionist,
     switchProfessor: switchProfessor,
     validateSession: validateSession,
-    requestResetPassword:requestResetPassword,
-    resetPassword:resetPassword,
-    getUserOnResetP:getUserOnResetP
+    requestResetPassword: requestResetPassword,
+    resetPassword: resetPassword,
+    getUserOnResetP: getUserOnResetP
 }
-
 
 
 function mailResetPassword(correo, token) {

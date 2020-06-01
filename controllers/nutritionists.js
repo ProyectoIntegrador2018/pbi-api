@@ -57,29 +57,6 @@ const getNutritionist = function (req, res) {
     })
 }
 
-// const changePassword = function (req, res) {
-//     const _id = req.params.id
-//     var _pwd = req.body.password
-
-//     console.log(_pwd)
-//     bcrypt.hash(_pwd, SECRET).then(function(hash){
-//         _pwd = hash
-//         console.log(_pwd)
-//         Nutritionist.findByIdAndUpdate(_id, {password: _pwd}).then(function(nutritionist){
-//             if (!nutritionist) {
-//                 return res.status(404).send({ error: `El nutriólogo con id ${_id} no existe` })
-//             }
-//             return res.send(nutritionist)
-//         })
-//     }).catch(function (error) {
-//         return res.status(505).send({ error: error })
-//     })
-// }
-
-// const updateNutritionistAdmin = function (req, res) {
-//     const _id = req.nutritionist.id
-// }
-
 const login = function (req, res) {
     const _email = req.body.email
     const _pwd = req.body.password
@@ -127,9 +104,9 @@ const validateSession = function (req, res) {
 
 function jsonCopy(src) {
     return JSON.parse(JSON.stringify(src));
-  }
+}
 
-const report = async function(req,res){
+const report = async function (req, res) {
     const nutritionist_id = req.params.id
     const startDate = new Date(req.body.startDate)
     const endDate = new Date(req.body.endDate)
@@ -137,87 +114,84 @@ const report = async function(req,res){
     var listaPosible = []
     endDate.setHours(23)
     endDate.setMinutes(59)
-   
-    var nutritionist = await Nutritionist.findById(nutritionist_id)
-    
-    if(!nutritionist){
-        res.status(400).send({"error":"Nutrilogo no encontrado"})
-    }
-    var list = await Appointment.find({"_id":{ $in: nutritionist.appointments }})
-   
-   
-   for(const appoint of list){
-        const dateApp = new Date(appoint.date)
-        dateApp.setHours(dateApp.getHours()-24)
-        var record = await Record.findOne({appointments:appoint._id})
 
-        if(!grouped[record._id]){
+    var nutritionist = await Nutritionist.findById(nutritionist_id)
+
+    if (!nutritionist) {
+        res.status(400).send({ "error": "Nutrilogo no encontrado" })
+    }
+    var list = await Appointment.find({ "_id": { $in: nutritionist.appointments } })
+
+
+    for (const appoint of list) {
+        const dateApp = new Date(appoint.date)
+        dateApp.setHours(dateApp.getHours() - 24)
+        var record = await Record.findOne({ appointments: appoint._id })
+
+        if (!grouped[record._id]) {
             grouped[record._id] = record
             grouped[record._id].appointments = []
-        
+
         }
-        if(dateApp.getTime() >= startDate.getTime() && dateApp.getTime() <= endDate.getTime()){
+        if (dateApp.getTime() >= startDate.getTime() && dateApp.getTime() <= endDate.getTime()) {
             grouped[record._id].appointments.push(appoint._id)
-        }    
+        }
     }
 
     var placeHolder = {
-        "PBI":0,
-        "CG":0,
-        "Cortesía":0,
-        "Clase deportiva":0,
+        "PBI": 0,
+        "CG": 0,
+        "Cortesía": 0,
+        "Clase deportiva": 0,
         "Intramuros": 0,
-        "Representativos":0,
-        "Ev. Médica":0,
+        "Representativos": 0,
+        "Ev. Médica": 0,
         "Líderes": 0,
-        "Otro":0,
-        "Total":0
+        "Otro": 0,
+        "Total": 0
     }
 
     let report = {
-        pacientes:{
+        pacientes: {
             "Hombre": jsonCopy(placeHolder),
             "Mujer": jsonCopy(placeHolder),
-            "Otro":jsonCopy(placeHolder)
+            "Otro": jsonCopy(placeHolder)
         },
-        citas:{
-            "Hombre":jsonCopy(placeHolder),
-            "Mujer":jsonCopy(placeHolder),
+        citas: {
+            "Hombre": jsonCopy(placeHolder),
+            "Mujer": jsonCopy(placeHolder),
             "Otro": jsonCopy(placeHolder)
         }
     }
 
-    for(const patient in grouped){
+    for (const patient in grouped) {
         //Agregar al contador de pacientes total
-        if(!report["pacientes"][grouped[patient].gender]["Total"]){
+        if (!report["pacientes"][grouped[patient].gender]["Total"]) {
             report["pacientes"][grouped[patient].gender]["Total"] = 1;
-        }else{
+        } else {
             report["pacientes"][grouped[patient].gender]["Total"] += 1;
         }
         //Agregar al contador de pacientes de su programa
-        if(!report["pacientes"][grouped[patient].gender][grouped[patient].program]){
+        if (!report["pacientes"][grouped[patient].gender][grouped[patient].program]) {
             report["pacientes"][grouped[patient].gender][grouped[patient].program] = 1;
-        }else{
+        } else {
             report["pacientes"][grouped[patient].gender][grouped[patient].program] += 1;
         }
 
         //Agregar al contador de citas total
-        if(!report["citas"][grouped[patient].gender]["Total"]){
+        if (!report["citas"][grouped[patient].gender]["Total"]) {
             report["citas"][grouped[patient].gender]["Total"] = grouped[patient].appointments.length;
-        }else{
-            report["citas"][grouped[patient].gender]["Total"] +=grouped[patient].appointments.length;
+        } else {
+            report["citas"][grouped[patient].gender]["Total"] += grouped[patient].appointments.length;
         }
         //Agregar al contador de citas del programa
-        if(!report["citas"][grouped[patient].gender][grouped[patient].program]){
+        if (!report["citas"][grouped[patient].gender][grouped[patient].program]) {
             report["citas"][grouped[patient].gender][grouped[patient].program] = grouped[patient].appointments.length;
-        }else{
+        } else {
             report["citas"][grouped[patient].gender][grouped[patient].program] += grouped[patient].appointments.length;
         }
     }
     return res.send(report)
-   
-
-    
 }
 
 
@@ -230,5 +204,5 @@ module.exports = {
     logout: logout,
     deleteNutritionist: deleteNutritionist,
     validateSession: validateSession,
-    report:report
+    report: report
 }

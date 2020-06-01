@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator')
+const mongoose = require('mongoose')
 
 const classSchema = new mongoose.Schema({
     name: {
@@ -58,6 +57,7 @@ const classSchema = new mongoose.Schema({
         type: String
     }
 })
+
 
 const Class = mongoose.model('Class', classSchema)
 module.exports = Class

@@ -119,12 +119,10 @@ const changeCost = async function (req, res) {
         cabin = await cabin.save().catch(function (error) {
             return res.status(505).send({ error: error })
         })
-        console.log(cabin.cost)
     }
     locker.save().then(function () {
         return res.send(locker)
     }).catch(function (error) {
-        console.log(error)
         return res.status(505).send({ error: error })
     })
 }
@@ -189,11 +187,9 @@ const removeCabins = async function (req, res) {
             if (!user) {
                 return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
             }
-            cancelCabinMail(user.name,user.email,user.nomina,cabin)
+            cancelCabinMail(user.name, user.email, user.nomina, cabin)
             user.locker = null
-            user.save().then(function () {
-                console.log(`El casillero tiene un usuario asignado`)
-            })
+            user.save()
         }
 
     }
@@ -258,12 +254,11 @@ const assignCabin = async function (req, res) {
     const _cabID = req.params.id
     const _userID = req.body.id
 
-    const user = await User.findById(_userID)
+    const user = await User.findOne({nomina:_userID})
     if (!user) {
-        return res.status(404).send({ error: `El usuario con id ${_userID} no existe` })
+        return res.status(404).send({ error: `El usuario con Nómmina ${_userID} no existe` })
     }
     if (user.locker) {
-        console.log(user.locker)
         return res.status(400).send({ error: 'El usuario ya cuenta con un casillero' })
     }
 
@@ -277,7 +272,7 @@ const assignCabin = async function (req, res) {
 
     if (cabin.status == 'Disponible') {
         cabin.status = 'Asignado'
-        cabin.assignee = _userID
+        cabin.assignee = user._id
         cabin.save().then(function () {
             user.locker = _cabID
             user.save().then(function () {
@@ -318,7 +313,7 @@ const unassignLocker = async function (req, res) {
         cabin.status = 'Disponible'
         cabin.assignee = null
         cabin.save().then(function () {
-            // Enviar correo de desasignado
+            cancelCabinMail(user.name, user.email, user.nomina, cabin)
             return res.send(cabin)
         }).catch(function (error) {
             res.status(505).send({ error: error })
@@ -350,10 +345,10 @@ const switchStatus = async function (req, res) {
                     result = user.save().catch(function (error) {
                         res.status(505).send({ error: error })
                     })
-                    if(result){
+                    if (result) {
                         cabin.status = 'Disponible'
                         cabin.assignee = null
-                        cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                        cancelCabinMail(user.name, user.email, user.nomina, cabin)
                     }
                 } else {
                     cabin.status = 'Disponible'
@@ -390,12 +385,11 @@ const deleteLocker = async function (req, res) {
             }
             user.locker = null
             user.save().then(function () {
-                cancelCabinMail(user.name,user.email,user.nomina,cabin)
+                cancelCabinMail(user.name, user.email, user.nomina, cabin)
                 return res.send(`El casillero con id ${_cabID} estaba asignado al usuario con id ${_userID} y se le ha desasignado`)
             })
         }
     }
-
     return res.send(locker)
 }
 
@@ -405,7 +399,7 @@ const emptyLocker = async function (req, res) {
     if (!locker) {
         return res.status(404).send({ error: 'No hay casilleros con esas especificaciones' })
     }
-    
+
     const _cnt = locker.count
     for (var i = 0; i < _cnt; i++) {
         var _cabID = locker.lockers[i]
@@ -420,11 +414,10 @@ const emptyLocker = async function (req, res) {
             }
             cabin.status = 'Disponible'
             cabin.assignee = null
-            cabin.save().then(function(){
-                user.locker  = null
+            cabin.save().then(function () {
+                user.locker = null
                 user.save().then(function () {
-                    console.log(cabin)
-                    // Enviar correo de desasignado
+                    cancelCabinMail(user.name, user.email, user.nomina, cabin)
                 }).catch(function (error) {
                     return res.status(505).send({ error: error })
                 })
@@ -493,7 +486,7 @@ function mailing(name, correo, nomina, locker) {
                 <ul>
                     <li><span style="font-size:16pt">Vestidor Seleccionado: ${locker.dresser}</li>
                     <li><span style="font-size:16pt">Número de casillero: ${locker.number}</span></li>
-                    <li><span style="font-size:16pt">Costo: ${"$"+locker.cost}</span></li>
+                    <li><span style="font-size:16pt">Costo: ${"$" + locker.cost}</span></li>
                 </ul>
                 </div>
             <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
@@ -533,8 +526,8 @@ function mailing(name, correo, nomina, locker) {
     }
 }
 
-function cancelCabinMail(name, correo, nomina,locker) {
-    try{
+function cancelCabinMail(name, correo, nomina, locker) {
+    try {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
@@ -608,7 +601,7 @@ function cancelCabinMail(name, correo, nomina,locker) {
 
             console.log("message sent succesfully")
         })
-    }catch(error){
+    } catch (error) {
         console.log(error)
     }
 }

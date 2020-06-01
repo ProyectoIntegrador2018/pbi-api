@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const validator = require('validator')
+
 const professorSchema = new mongoose.Schema({
     account: {
         type: mongoose.Schema.Types.ObjectId,

@@ -55,7 +55,7 @@ const recordSchema = new mongoose.Schema({
         type: String,
 
     },
-    goal: {//Meta nutricional
+    goal: { //Meta nutricional
         type: String
     },
     meditions: {
@@ -77,7 +77,7 @@ const recordSchema = new mongoose.Schema({
             physicalActivity: {
                 type: String
             },
-            duration: {//Número decimal Ej. 2.15 = 2 horas y 15 min
+            duration: { //Número decimal Ej. 2.15 = 2 horas y 15 min
                 type: Number
             },
             frequency: {
@@ -177,13 +177,13 @@ const recordSchema = new mongoose.Schema({
             type: Number,
             default: 0
         }
-    }]
-    ,
+    }],
     appointments: [{
         type: mongoose.Schema.Types.ObjectId,
         refs: "appointments"
     }]
 })
+
 
 const Record = mongoose.model('Record', recordSchema)
 module.exports = Record
