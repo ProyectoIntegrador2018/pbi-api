@@ -36,12 +36,10 @@ const appointmentSchema = new mongoose.Schema({
         required: true
     },
     muscleMass: {
-        type: Number,
-        required: true
+        type: Number
     },
     fatMass: {
-        type: Number,
-        required: true
+        type: Number
     },
     fatMassPct: {
         type: Number

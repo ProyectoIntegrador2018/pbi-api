@@ -137,7 +137,7 @@ const report = async function (req, res) {
             grouped[record._id].appointments.push(appoint._id)
         }
     }
-
+    const listaProgramas = ["PBI","CG","Cortesía","Clase deportiva","Intramuros","Representativos","Ev. Médica","Líderes"]
     var placeHolder = {
         "PBI": 0,
         "CG": 0,
@@ -165,6 +165,9 @@ const report = async function (req, res) {
     }
 
     for (const patient in grouped) {
+        if(!listaProgramas.includes(grouped[patient].program)){
+            grouped[patient].program = "Otro"
+        }
         //Agregar al contador de pacientes total
         if (!report["pacientes"][grouped[patient].gender]["Total"]) {
             report["pacientes"][grouped[patient].gender]["Total"] = 1;
