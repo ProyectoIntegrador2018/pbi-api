@@ -29,7 +29,6 @@ Sistema de Inscripciones PBI (Sitio Web)
 ### Environment URLS
 
 * **Production** - [TBD](inscripcionespbitec.firebaseapp.com)
-* **Development** - [TBD](TBD)
 
 ### Team members
 
@@ -64,7 +63,6 @@ Version 2.0
 You should ask for access to this tools if you don't have it already:
 
 * [Github repo](https://github.com/ProyectoIntegrador2018/pbi-api)
-* [Backlog]()
 * [Heroku](https://inscripcionespbi-backend.herokuapp.com) (API)
 * [Documentation](https://drive.google.com/drive/u/2/folders/1HxzSv_UqLsO1F6e_aaYM3d7Hoos28w91)
 
