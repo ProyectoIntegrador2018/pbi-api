@@ -1,6 +1,10 @@
 const User = require('../models/user')
 const Class = require('../models/class')
 const Account = require('../models/account')
+const Admin = require('../models/admin')
+const Nutritionist = require('../models/nutritionist')
+const Professor = require('../models/professor')
+const Cabin = require('../models/cabin')
 
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
@@ -122,32 +126,55 @@ const updateUserByAdmin = function (req, res) {
     })
 }
 
-const deleteUser = function (req, res) {
+const deleteUser = async function (req, res) {
     const _id = req.params.id
 
-    User.findById(_id).then(function (user) {
-        if (!user) {
-            return res.status(404).send()
-        }
-        Class.find({ "_id": { $in: user.classes } }).then((classes) => {
-            classes.forEach(function (clase) {
+    var user = await User.findByIdAndDelete(_id)
+    if (!user) {
+        return res.status(404).send({ error: `El usuario con id ${_id} no existe` })
+    }
 
-                clase.enrolled = clase.enrolled.filter(function (value, index, arr) {
-                    return !(String(value) === String(user._id))
-                })
-                clase.save().catch(() => {
-                    res.status(400).send({ error: "Hubo un error al eliminar las clases del usuario eliminado" })
-                })
-            })
-            user.deleteOne({ _id: req.params.id }).then((_) => {
-                return res.send(user)
-            }).catch(() => {
-                res.status(400).send({ error: "Hubo un error al eliminadr el usuario" })
-            })
-        })
-    }).catch(function (error) {
-        res.status(505).send(error)
-    })
+    var account = await Account.findByIdAndDelete(user.account)
+    if (!account) {
+        return res.status(404).send({ error: `La cuenta con id ${user.account} no existe` })
+    }
+
+    if(account.isAdmin){
+        var admin = await Admin.findByIdAndDelete(account.adminAcc)
+        if (!admin) {
+            return res.status(404).send({ error: `El administrador con id ${account.adminAcc} no existe` })
+        }
+    }
+    if(account.isProf){
+        var professor = await Professor.findByIdAndDelete(account.profAcc)
+        if (!professor) {
+            return res.status(404).send({ error: `El profesor con id ${account.profAcc} no existe` })
+        }
+    }
+    if(account.isNutri){
+        var nutritionist = await Nutritionist.findByIdAndDelete(account.nutriAcc)
+        if (!nutritionist) {
+            return res.status(404).send({ error: `El nutriologo con id ${account.nutriAcc} no existe` })
+        }
+    }
+
+    if(user.locker){
+        var cabin = await Cabin.findById(user.locker)
+        if (!cabin) {
+            return res.status(404).send({ error: `El casillero con id ${user.locker} no existe` })
+        }
+        cabin.assignee = null
+        cabin.status = 'Disponible'
+        cabin.save()
+    }
+    for(var i=0; i<user.classes.length; i++){
+        var clase = await Class.findByIdAndUpdate(user.classes[i], {$pull: {enrolled: _id}})
+        if (!clase) {
+            return res.status(404).send({ error: `La clase con id ${user.classes[i]} no existe` })
+        }
+        clase.save()
+    }
+    return res.send(user)
 }
 
 const userConfirm = function (req, res) {
