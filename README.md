@@ -20,10 +20,11 @@ Sistema de Inscripciones PBI (Sitio Web)
 
 ### Client Details
 
-| Name                         | Email             | Role                                                                               |
-| ---------------------------- | ----------------- | ---------------------------------------------------------------------------------- |
-| Patricia Magdalena González  | patygzz@tec.mx    | Directora en Dirección de Bienestar y Consejería ITESM Campus Mty.                 |
-| Sandra Nohemí Ramos Hernández| snrh@tec.mx       | Especialista de bienestar en Dirección de Bienestar y Consejería ITESM Campus Mty. | 
+| Name                          | Email             | Role                                                                               |
+| ----------------------------  | ----------------- | ---------------------------------------------------------------------------------- |
+| Patricia Magdalena González   | patygzz@tec.mx    | Directora en Dirección de Bienestar y Consejería ITESM Campus Mty.                 |
+| Sandra Nohemí Ramos Hernández | snrh@tec.mx       | Especialista de bienestar en Dirección de Bienestar y Consejería ITESM Campus Mty. |
+| Andrea Lizbeth Chávez Niño    | ann.chavez@tec.mx | Nutrióloga Dir. Bienestar y Consejeria                                             |
 
 
 ### Environment URLS
@@ -50,6 +51,14 @@ Version 2.0
 |Alejandro González Valles          | alex.glz.v@hotmail.com  | Administrador de Configuración    |
 |David Rojas Ortíz                  | dav_rojas@hotmail.com   | SCRUM Master                      |
 |Lizzie Montserrat Cañamar Carrillo | lizziecanamar@gmail.com | Administrador de Proyecto         |
+
+Version 3.0
+| Name                        | Email                       | Role                           |
+|-----------------------------|-----------------------------|--------------------------------|
+| Juan Carlos De León Álvarez | juandleon27@gmail.com       | Product Owner Proxy            |
+| José Cruz Flores Flores     | josecruzflores.fl@gmail.com | Administrador de Configuración |
+| Ricardo Gerhard             | garzag.rick@gmail.com       | SCRUM Master                   |
+| Luis Marcelo Flores Canales | luismarcelofc@gmail.com     | Administrador de Proyecto      |
 
 ### Technology Stack
 | Technology      | Version      |
