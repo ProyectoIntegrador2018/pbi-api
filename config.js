@@ -13,3 +13,5 @@ exports.MAIL_PORT = process.env.MAIL_PORT || 465;
 exports.HOST = process.env.HOST || "smtp.mail.com";
 
 exports.PORT = process.env.PORT || 3000;
+
+exports.SECURE = process.env.SECURE || false;

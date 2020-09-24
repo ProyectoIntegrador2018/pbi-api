@@ -6,15 +6,9 @@ const {
     EMAIL,
     HOST,
     KEY,
-    SECRET
+    SECRET,
+    SECURE
 } = require('../config');
-
-if (process.env.NODE_ENV === 'production') {
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var SECURE = config.securehost
-}
 
 const createNutritionist = function (req, res) {
     const nutritionist = new Nutritionist(req.body)

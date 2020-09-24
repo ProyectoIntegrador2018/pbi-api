@@ -10,15 +10,9 @@ const {
     HOST,
     KEY,
     MAIL_PORT,
-    FRONT_URL
+    FRONT_URL,
+    SECURE
 } = require('../config');
-
-if (process.env.NODE_ENV === 'production') {
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var SECURE = config.securehost
-}
 
 const getUsers = function (req, res) {
     User.find({}).then(function (users) {

@@ -5,15 +5,9 @@ const {
     EMAIL,
     HOST,
     KEY,
-    MAIL_PORT
+    MAIL_PORT,
+    SECURE
 } = require('../config');
-
-if (process.env.NODE_ENV === 'production') {
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var SECURE = config.securehost
-}
 
 const createClass = function (req, res) {
     const clase = new Class(req.body)

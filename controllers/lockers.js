@@ -5,15 +5,9 @@ const {
     EMAIL,
     HOST,
     KEY,
-    MAIL_PORT
+    MAIL_PORT,
+    SECURE
 } = require('../config');
-
-if (process.env.NODE_ENV === 'production') {
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var SECURE = config.securehost
-}
 
 const createLocker = function (req, res) {
     const _camp = req.body.campus
