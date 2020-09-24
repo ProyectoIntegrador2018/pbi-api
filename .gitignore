@@ -1,5 +1,4 @@
 node_modules/
-config.js
 
 .DS_Store
 /dist
@@ -21,5 +20,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-config.js
-config.js
