@@ -1,17 +1,16 @@
 const Class = require('../models/class')
 const User = require('../models/user')
 const Term = require('../models/term')
+const {EMAIL} = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
-    var EMAIL = process.env.EMAIL;
     var HOST = process.env.HOST
     var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
 } else {
     const config = require('../config')
     var KEY = config.key;
-    var EMAIL = config.email;
     var HOST = config.host
     var MAILPORT = config.mailport
     var SECURE = config.securehost

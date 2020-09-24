@@ -2,10 +2,10 @@ const Nutritionist = require('../models/nutritionist')
 const Record = require('../models/record')
 const Appointment = require('../models/appointment')
 // const bcrypt = require('bcryptjs')
+const {EMAIL} = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
     var KEY = process.env.KEY;
-    var EMAIL = process.env.EMAIL;
     var frontURL = process.env.FRONTURL
     var HOST = process.env.HOST
     var MAILPORT = process.env.MAILPORT
@@ -14,7 +14,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     const config = require('../config')
     var KEY = config.key;
-    var EMAIL = config.email;
     var frontURL = config.frontURL
     var HOST = config.host
     var MAILPORT = config.mailport
