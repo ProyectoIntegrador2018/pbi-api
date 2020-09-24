@@ -4,15 +4,14 @@ const User = require('../models/user')
 const {
     EMAIL,
     HOST,
-    KEY
+    KEY,
+    MAIL_PORT
 } = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
-    var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
 } else {
     const config = require('../config')
-    var MAILPORT = config.mailport
     var SECURE = config.securehost
 }
 
@@ -449,7 +448,7 @@ function mailing(name, correo, nomina, locker) {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
-            port: MAILPORT,
+            port: MAIL_PORT,
             secure: SECURE,
             auth: {
                 user: EMAIL,
@@ -530,7 +529,7 @@ function cancelCabinMail(name, correo, nomina, locker) {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
-            port: MAILPORT,
+            port: MAIL_PORT,
             secure: SECURE,
             auth: {
                 user: EMAIL,

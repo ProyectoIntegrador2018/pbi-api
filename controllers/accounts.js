@@ -8,17 +8,15 @@ const bcrypt = require('bcryptjs')
 const {
     EMAIL,
     HOST,
-    KEY
+    KEY,
+    MAIL_PORT,
+    FRONT_URL
 } = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
-    var frontURL = process.env.FRONTURL
-    var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
 } else {
     const config = require('../config')
-    var frontURL = config.frontURL
-    var MAILPORT = config.mailport
     var SECURE = config.securehost
 }
 
@@ -351,7 +349,7 @@ function mailResetPassword(correo, token) {
     const nodemailer = require('nodemailer')
     const mailTransport = nodemailer.createTransport({
         host: HOST,
-        port: MAILPORT,
+        port: MAIL_PORT,
         secure: SECURE,
         auth: {
             user: EMAIL,
@@ -382,7 +380,7 @@ function mailResetPassword(correo, token) {
         </span></div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <ul>
-        <li><span style="font-size:16pt">Haz click </span><a href="${frontURL}/newpassword?token=${token}" target="_blank" title="Reestablecer contrseña"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para continuar.</span></li></ul>
+        <li><span style="font-size:16pt">Haz click </span><a href="${FRONT_URL}/newpassword?token=${token}" target="_blank" title="Reestablecer contrseña"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para continuar.</span></li></ul>
         </div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <span><br>
