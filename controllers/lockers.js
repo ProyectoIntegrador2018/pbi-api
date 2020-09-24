@@ -1,17 +1,17 @@
 const Locker = require('../models/locker')
 const Cabin = require('../models/cabin')
 const User = require('../models/user')
-const {EMAIL} = require('../config');
+const {
+    EMAIL,
+    HOST,
+    KEY
+} = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY
-    var HOST = process.env.HOST
     var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
 } else {
     const config = require('../config')
-    var KEY = config.key
-    var HOST = config.host
     var MAILPORT = config.mailport
     var SECURE = config.securehost
 }

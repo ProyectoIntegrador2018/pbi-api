@@ -5,13 +5,7 @@ const User = require('../models/user')
 const Admin = require('../models/admin')
 const Professor = require('../models/professor')
 const Nutritionist = require('../models/nutritionist')
-
-if (process.env.NODE_ENV === 'production') {
-    var SECRET = process.env.SECRET;
-} else {
-    const config = require('../config.js')
-    var SECRET = config.secret;
-}
+const {SECRET} = require('../config');
 
 const auth = function (req, res, next) {
     try {

@@ -2,13 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
-if (process.env.NODE_ENV === 'production') {
-    var SECRET = process.env.SECRET;
-} else {
-    const config = require('../config.js')
-    var SECRET = config.secret;
-}
+const {SECRET} = require('../config');
 
 const accountSchema = new mongoose.Schema({
     name: {

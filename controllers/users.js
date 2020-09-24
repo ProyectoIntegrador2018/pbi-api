@@ -5,19 +5,19 @@ const Admin = require('../models/admin')
 const Nutritionist = require('../models/nutritionist')
 const Professor = require('../models/professor')
 const Cabin = require('../models/cabin')
-const {EMAIL} = require('../config');
+const {
+    EMAIL,
+    HOST,
+    KEY
+} = require('../config');
 
 if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY;
     var frontURL = process.env.FRONTURL
-    var HOST = process.env.HOST
     var MAILPORT = process.env.MAILPORT
     var SECURE = process.env.SECUREHOST
 } else {
     const config = require('../config')
-    var KEY = config.key;
     var frontURL = config.frontURL
-    var HOST = config.host
     var MAILPORT = config.mailport
     var SECURE = config.securehost
 }
