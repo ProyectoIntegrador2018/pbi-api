@@ -1,12 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
-
-if (process.env.NODE_ENV === 'production') {
-    var SECRET = process.env.SECRET;
-} else {
-    const config = require('../config.js')
-    var SECRET = config.secret;
-}
+const {SECRET} = require('../config');
 
 const adminSchema = new mongoose.Schema({
     account: {

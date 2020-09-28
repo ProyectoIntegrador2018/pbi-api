@@ -5,23 +5,14 @@ const Admin = require('../models/admin')
 const Nutritionist = require('../models/nutritionist')
 const Professor = require('../models/professor')
 const Cabin = require('../models/cabin')
-
-if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY;
-    var EMAIL = process.env.EMAIL;
-    var frontURL = process.env.FRONTURL
-    var HOST = process.env.HOST
-    var MAILPORT = process.env.MAILPORT
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var KEY = config.key;
-    var EMAIL = config.email;
-    var frontURL = config.frontURL
-    var HOST = config.host
-    var MAILPORT = config.mailport
-    var SECURE = config.securehost
-}
+const {
+    EMAIL,
+    HOST,
+    KEY,
+    MAIL_PORT,
+    FRONT_URL,
+    SECURE
+} = require('../config');
 
 const getUsers = function (req, res) {
     User.find({}).then(function (users) {
@@ -261,7 +252,7 @@ function mailing(nomina, correo, token) {
     const nodemailer = require('nodemailer')
     const mailTransport = nodemailer.createTransport({
         host: HOST,
-        port: MAILPORT,
+        port: MAIL_PORT,
         secure: SECURE,
         auth: {
             user: EMAIL,
@@ -293,7 +284,7 @@ function mailing(nomina, correo, token) {
         </span></div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <ul>
-        <li><span style="font-size:16pt">Haz click </span><a href="${frontURL}/confirm?token=${token}" target="_blank" title="Haz clic para confirmar cuenta"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para completar tu
+        <li><span style="font-size:16pt">Haz click </span><a href="${FRONT_URL}/confirm?token=${token}" target="_blank" title="Haz clic para confirmar cuenta"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para completar tu
         registro.</span></li></ul>
         </div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">

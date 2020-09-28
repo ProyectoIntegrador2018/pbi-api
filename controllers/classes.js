@@ -1,21 +1,13 @@
 const Class = require('../models/class')
 const User = require('../models/user')
 const Term = require('../models/term')
-
-if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY;
-    var EMAIL = process.env.EMAIL;
-    var HOST = process.env.HOST
-    var MAILPORT = process.env.MAILPORT
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var KEY = config.key;
-    var EMAIL = config.email;
-    var HOST = config.host
-    var MAILPORT = config.mailport
-    var SECURE = config.securehost
-}
+const {
+    EMAIL,
+    HOST,
+    KEY,
+    MAIL_PORT,
+    SECURE
+} = require('../config');
 
 const createClass = function (req, res) {
     const clase = new Class(req.body)
@@ -442,7 +434,7 @@ function mailing(name, nomina, correo, clase) {
     const nodemailer = require('nodemailer')
     const mailTransport = nodemailer.createTransport({
         host: HOST,
-        port: MAILPORT,
+        port: MAIL_PORT,
         secure: SECURE,
         auth: {
             user: EMAIL,

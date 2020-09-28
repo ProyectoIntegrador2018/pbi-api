@@ -5,23 +5,14 @@ const Professor = require('../models/professor')
 const Nutritionist = require('../models/nutritionist')
 
 const bcrypt = require('bcryptjs')
-
-if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY;
-    var EMAIL = process.env.EMAIL;
-    var frontURL = process.env.FRONTURL
-    var HOST = process.env.HOST
-    var MAILPORT = process.env.MAILPORT
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var KEY = config.key;
-    var EMAIL = config.email;
-    var frontURL = config.frontURL
-    var HOST = config.host
-    var MAILPORT = config.mailport
-    var SECURE = config.securehost
-}
+const {
+    EMAIL,
+    HOST,
+    KEY,
+    MAIL_PORT,
+    FRONT_URL,
+    SECURE
+} = require('../config');
 
 const getAccounts = function (req, res) {
     Account.find({}).then(function (accounts) {
@@ -352,7 +343,7 @@ function mailResetPassword(correo, token) {
     const nodemailer = require('nodemailer')
     const mailTransport = nodemailer.createTransport({
         host: HOST,
-        port: MAILPORT,
+        port: MAIL_PORT,
         secure: SECURE,
         auth: {
             user: EMAIL,
@@ -383,7 +374,7 @@ function mailResetPassword(correo, token) {
         </span></div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <ul>
-        <li><span style="font-size:16pt">Haz click </span><a href="${frontURL}/newpassword?token=${token}" target="_blank" title="Reestablecer contrseña"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para continuar.</span></li></ul>
+        <li><span style="font-size:16pt">Haz click </span><a href="${FRONT_URL}/newpassword?token=${token}" target="_blank" title="Reestablecer contrseña"><span style="font-size:16pt">aquí</span></a><span style="font-size:16pt"> para continuar.</span></li></ul>
         </div>
         <div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt">
         <span><br>

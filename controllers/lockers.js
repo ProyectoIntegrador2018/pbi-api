@@ -1,21 +1,13 @@
 const Locker = require('../models/locker')
 const Cabin = require('../models/cabin')
 const User = require('../models/user')
-
-if (process.env.NODE_ENV === 'production') {
-    var KEY = process.env.KEY
-    var EMAIL = process.env.EMAIL
-    var HOST = process.env.HOST
-    var MAILPORT = process.env.MAILPORT
-    var SECURE = process.env.SECUREHOST
-} else {
-    const config = require('../config')
-    var KEY = config.key
-    var EMAIL = config.email
-    var HOST = config.host
-    var MAILPORT = config.mailport
-    var SECURE = config.securehost
-}
+const {
+    EMAIL,
+    HOST,
+    KEY,
+    MAIL_PORT,
+    SECURE
+} = require('../config');
 
 const createLocker = function (req, res) {
     const _camp = req.body.campus
@@ -450,7 +442,7 @@ function mailing(name, correo, nomina, locker) {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
-            port: MAILPORT,
+            port: MAIL_PORT,
             secure: SECURE,
             auth: {
                 user: EMAIL,
@@ -531,7 +523,7 @@ function cancelCabinMail(name, correo, nomina, locker) {
         const nodemailer = require('nodemailer')
         const mailTransport = nodemailer.createTransport({
             host: HOST,
-            port: MAILPORT,
+            port: MAIL_PORT,
             secure: SECURE,
             auth: {
                 user: EMAIL,

@@ -101,22 +101,12 @@ $ npm install
 3. This back-end API works with this backend [`pbi-front`](https://github.com/ProyectoIntegrador2018/pbi-api)
 
 ### Running the stack for Development
-1. Create a file called config.js in the root folder.
+1. Setup a .env file holding the environment variables used in config.js
 
-2. Create a variable called conecction URL that contains the URL to access a MongoDB database and export it:
-```
-module.exports.connectionURL = <Your collection URL>
-```
-3. In the same file create a variable called secret, this will be the secret to encrypt passwords and create tokens, so be sure to take the necessary cautions:
+2. Fire up a terminal and run:
 
 ```
-module.exports.secret = <Your secret>
-```
-
-4. Fire up a terminal and run: 
-
-```
-node index.js
+npm run dev
 ```
 
 That command will create an instance in localhost:3000 as default. You can change this value changing the "port" variable in index.js
