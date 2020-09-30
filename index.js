@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express')
+const morgan = require('morgan');
 require('./db/mongoose')
 var moment = require('moment-timezone');
 const {PORT} = require('./config');
@@ -11,6 +12,7 @@ const app = express()
 
 moment.tz.setDefault("America/Monterrey");
 app.use(express.json()) // parsea a json
+app.use(morgan('dev'));
 app.use(router)
 
 
