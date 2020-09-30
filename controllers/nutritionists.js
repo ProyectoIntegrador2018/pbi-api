@@ -15,9 +15,9 @@ const createNutritionist = function (req, res) {
     nutritionist.save().then(function () {
         return res.send(nutritionist)
     }).catch((error) => {
-        if (error.errmsg.includes("nomina")) {
+        if (error.message.includes("nomina")) {
             return res.status(400).send({ error: "Ya existe un nutriólogo con la nómina especificada" })
-        } else if (error.errmsg.includes("email")) {
+        } else if (error.message.includes("email")) {
             return res.status(400).send({ error: "Ya existe un nutriólogo con el correo especificado" })
         } else {
             return res.status(400).send({ error: "Error desconocido" })
