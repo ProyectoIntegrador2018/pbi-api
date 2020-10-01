@@ -7,8 +7,10 @@ const {
     HOST,
     KEY,
     SECRET,
-    SECURE
+    SECURE,
+    NEW_NUTRI_CODE
 } = require('../config');
+const Account = require('../models/account');
 
 const createNutritionist = function (req, res) {
     const nutritionist = new Nutritionist(req.body)
@@ -45,10 +47,43 @@ const getNutritionist = function (req, res) {
     })
 }
 
-const login = function (req, res) {
+const login = async function (req, res) {
+    // First check if account is saved as nutritionist, if not, check for token of creation. No token, send error that account is not nutritionist
+    const account = await Account.findOne({ email: req.body.email });
+    if (!account) {
+        return res.status(401).send({ error: "La cuenta no existe", type: 1 })
+    }
+
+    const nutriData = await Nutritionist.findOne({ email: req.body.email });
+    if (!nutriData) {
+        if (req.body.token != NEW_NUTRI_CODE) {
+            return res.status(401).send({ error: "La cuenta no es de nutriólogo y no se puede inicializar", type: 1 })
+        } else {
+            try {
+                // Create nutritionist profile
+                nutritionist = new Nutritionist({
+                    account: account._id,
+                    name: account.name,
+                    surname: account.surname,
+                    nomina: account.nomina,
+                    email: account.email,
+                    departamento: account.departamento,
+                    rectoria: account.rectoria
+                })
+                account.nutriAcc = nutritionist._id
+                account.isNutri = true
+                await account.save()
+                await nutritionist.save()
+            } catch(error) {
+                console.log(error);
+                return res.status(500).send(error)
+            }
+        }
+    }
+
     const _email = req.body.email
     const _pwd = req.body.password
-    Nutritionist.findByCredentials(_email, _pwd).then(function (nutritionist) {
+    Account.findByCredentials(_email, _pwd).then(function (nutritionist) {
         nutritionist.generateToken().then(function (token) {
             return res.send({ nutritionist, token })
         }).catch(function (error) {
