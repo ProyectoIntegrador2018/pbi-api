@@ -83,7 +83,11 @@ const login = async function (req, res) {
 
     const _email = req.body.email
     const _pwd = req.body.password
+<<<<<<< HEAD
     Account.findByCredentials(_email, _pwd).then(function (nutritionist) {
+=======
+    Account.findByCredentials(_email, _pwd).then(function () {
+>>>>>>> activate-nutri
         nutritionist.generateToken().then(function (token) {
             return res.send({ nutritionist, token })
         }).catch(function (error) {
