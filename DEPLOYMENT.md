@@ -12,12 +12,13 @@ In this document we use heroku in order to deploy the proyect. Other platforms c
 ### Technology Stack
 | Technology      | Version      |
 | --------------- | ------------ |
-| bcrypt          | 3.0.6        |
+| bcrypt          | 5.0.0        |
 | express         | 4.17.1       |
-| moment-timezone | 0.5.27       |
-| mongoose        | 5.7.3        |
-| nodemailer      | 6.3.1        |
+| moment-timezone | 0.5.31       |
+| mongoose        | 5.10.7       |
+| nodemailer      | 6.4.13       |
 | nodejs          | 12.14.0      |
+
 
 
 ### Preconditions
