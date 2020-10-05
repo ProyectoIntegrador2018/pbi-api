@@ -117,6 +117,7 @@ router.put('/nutricion/appointments/span', appointment.getAppointmentsSpan)
 router.get('/nutricion/appointments/:id', appointment.getAppointments)
 router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
 router.put('/nutricion/appointment/:id', appointment.updateAppointment)
+router.get('/nutricion/latestAppointment/:id', auth.authNutri, appointment.getLatestAppointment)
 
 router.post('/nutricion/report/:id', nutritionists.report)
 

@@ -70,6 +70,19 @@ const getAppointments = function (req, res) {
     })
 }
 
+async function getLatestAppointment(req, res) {
+    const recordId = req.params.id;
+    const record = await Record.findById(recordId);
+    if (!record) {
+        return res.status(400).send({error: "Registro no válido"});
+    }
+    const latestAppointment = await Appointment.findOne({'_id' : { $in: record.appointments}}, {}, {sort : {date : -1}});
+    if (!latestAppointment) {
+        return res.status(400).send({error : "No hay citas registradas"});
+    }
+    return res.status(200).json(latestAppointment);
+}
+
 const deleteAppointment = function (req, res) {
     const _id = req.params.id
     Appointment.findByIdAndDelete(_id).then((appointment) => {
@@ -111,5 +124,6 @@ module.exports = {
     updateAppointment: updateAppointment,
     getAppointment: getAppointment,
     getAppointments: getAppointments,
-    getAppointmentsSpan: getAppointmentsSpan
+    getAppointmentsSpan: getAppointmentsSpan,
+    getLatestAppointment: getLatestAppointment,
 }
