@@ -81,7 +81,57 @@ const appointmentSchema = new mongoose.Schema({
             required: true,
             ref: 'Nutritionist'
         }
-    }
+    },
+    diet: {
+        fruit: {
+            type: Number,
+            default: 0
+        },
+        vegetable: {
+            type: Number,
+            default: 0
+        },
+        legume: {
+            type: Number,
+            default: 0
+        },
+        cereal: {
+            type: Number,
+            default: 0
+        },
+        sugar: {
+            type: Number,
+            default: 0
+        },
+        fat: {
+            type: Number,
+            default: 0
+        },
+        milkWhole: {
+            type: Number,
+            default: 0
+        },
+        milkSemiSkimmed: {
+            type: Number,
+            default: 0
+        },
+        milkSkimmed: {
+            type: Number,
+            default: 0
+        },
+        meatWhole: {
+            type: Number,
+            default: 0
+        },
+        meatSemiGreasy: {
+            type: Number,
+            default: 0
+        },
+        meatGreasy: {
+            type: Number,
+            default: 0
+        },
+    },
 })
 
 
