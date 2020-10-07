@@ -1,5 +1,6 @@
 const Record = require("../models/record")
 const Nutritionist = require("../models/nutritionist")
+const uuid = require('uuid');
 
 const createRecord = async function (req, res) {
     var _nutrID
@@ -94,6 +95,62 @@ const addReminder = function (req, res) {
     })
 }
 
+async function addDiet(req, res) {
+    const reqId = req.params.id;
+    if (!req.body.diet) {
+        return res.status(400).send({error : "Necesita mandarse una dieta"});
+    }
+    const diet = req.body.diet;
+    diet.id = uuid.v4();
+    diet.date = new Date();
+    const record = await Record.findByIdAndUpdate(reqId, { $push : {diets : diet}}, { new : true});
+    if (!record) {
+        return res.status(400).send({ error : "No se encontró el registro"});
+    }
+    return res.status(200).json(record);
+}
+
+async function deleteDiet(req, res) {
+    const reqId = req.params.recordId;
+    const dietId = req.params.dietId;
+    const record = await Record.findByIdAndUpdate(reqId, { $pull : { diets : { id : dietId}}}, { new : true});
+    if (!record) {
+        return res.status(400).send({error : "No se encontró el registro"});
+    }
+    return res.status(200).json(record);
+}
+
+async function editDiet(req, res) {
+    const reqId = req.params.recordId;
+    const dietId = req.params.dietId;
+    if (!req.body.diet) {
+        return res.status(400).send({error : "Necesita mandarse una dieta"});
+    }
+    const newDiet = req.body.diet;
+    const oldRecordDiet = await Record.findOne({_id: reqId, "diets.id": dietId}, {"diets.$" : 1});
+    if (!oldRecordDiet) {
+        return res.status(400).send({error : "Plan alimenticio no encontrado"});
+    }
+    const diet = oldRecordDiet.diets[0];
+    for (key in newDiet) {
+        diet[key] = newDiet[key];
+    }
+    const record = await Record.findOneAndUpdate({_id : reqId, "diets.id": dietId}, {$set : {"diets.$" : diet}}, {new:true, overwrite: false});
+    if (!record) {
+        return res.status(400).send({error : "No se encontró el registro"});
+    }
+    return res.status(200).json(record);
+}
+
+async function getDiet(req, res) {
+    const reqId = req.params.recordId;
+    const dietId = req.params.dietId;
+    const diet = await Record.findOne({_id : reqId, "diets.id" : dietId}, {"diets.$" : 1});
+    if (!diet) {
+        return res.status(400).send({error : "No se encontró la dieta especificada"});
+    }
+    return res.status(200).json(diet.diets[0]);
+}
 
 module.exports = {
     createRecord: createRecord,
@@ -102,5 +159,9 @@ module.exports = {
     getRecord: getRecord,
     editRecord: editRecord,
     deleteRecord: deleteRecord,
-    addReminder: addReminder
+    addReminder: addReminder,
+    addDiet: addDiet,
+    deleteDiet: deleteDiet,
+    editDiet: editDiet,
+    getDiet: getDiet,
 }

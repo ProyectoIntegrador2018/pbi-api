@@ -110,6 +110,10 @@ router.get('/nutricion/records', records.getRecords)
 router.get('/nutricion/records/:id', records.getRecord)
 router.put('/nutricion/records/:id', records.editRecord)
 router.delete('/nutricion/records/:id', records.deleteRecord)
+router.post('/nutricion/records/diet/:id', auth.authNutri, records.addDiet);
+router.delete('/nutricion/records/diet/:recordId/:dietId', auth.authNutri, records.deleteDiet);
+router.put('/nutricion/records/diet/:recordId/:dietId', auth.authNutri, records.editDiet);
+router.get('/nutricion/records/diet/:recordId/:dietId', auth.authNutri, records.getDiet);
 
 router.post('/nutricion/appointment/:id', auth.authNutri, appointment.createAppointment)
 router.get('/nutricion/appointment/:id', appointment.getAppointment)
