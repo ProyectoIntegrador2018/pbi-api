@@ -1,6 +1,7 @@
 # PBI API: Deployment
 
-In this document we use heroku in order to deploy the proyect. Other platforms can be used.
+In this document we use heroku in order to deploy the project. Other platforms can be used.
+MongoDB Atlas is used as the production backend
 
 ## Table of contents
 
@@ -64,4 +65,6 @@ After you commit your changes to git, you can deploy your app to Heroku:
 ```bash
 $ git push heroku master
 ```
-The back-end of this proyect will be working now.
+The back-end of this project will be working now.
+
+In the Heroku online admin panel, Environment variables for the Mongo URL must be added
