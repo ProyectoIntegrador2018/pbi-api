@@ -89,6 +89,7 @@ const authNutri = function (req, res, next) {
             Nutritionist.findOne({ _id: account.nutriAcc }).then(function (nutritionist) {
                 req.token = token
                 req.nutritionist = nutritionist
+                req.id = account.nutriAcc
                 next()
             }).catch(function (error) {
                 res.status(403).send({ error: 'No tiene acceso a esta sección' })
