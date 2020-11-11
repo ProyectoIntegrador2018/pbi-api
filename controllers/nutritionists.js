@@ -68,7 +68,7 @@ const login = async function (req, res) {
                     nomina: account.nomina,
                     email: account.email,
                     departamento: account.departamento,
-                    rectoria: account.rectoria
+                    rectoria: account.rectoria,
                 })
                 account.nutriAcc = nutritionist._id
                 account.isNutri = true

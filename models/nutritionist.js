@@ -45,8 +45,23 @@ const nutritionistSchema = new mongoose.Schema({
     appointments: [{
         type: mongoose.Schema.Types.ObjectID,
         ref: 'Appointment'
+    }],
+    bookings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Booking"
+    }],
+    bookingTimes: [{
+        type: mongoose.Schema.Types.Mixed,
+    }],
+    slug: {
+        type: String
+    },
+    calendarToken: {
+        type: String
+    },
+    calendarID: {
+        type: String
     }
-    ]
 
 }, {
     toObject: {

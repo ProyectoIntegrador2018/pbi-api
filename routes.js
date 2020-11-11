@@ -13,6 +13,7 @@ const records = require('./controllers/records.js')
 const nutritionists = require('./controllers/nutritionists.js')
 const appointment = require('./controllers/appointments.js')
 const accounts = require('./controllers/accounts.js')
+const bookings = require("./controllers/bookings")
 
 router.all('*', cors())
 
@@ -123,6 +124,15 @@ router.delete('/nutricion/appointment/:id', appointment.deleteAppointment)
 router.put('/nutricion/appointment/:id', appointment.updateAppointment)
 
 router.post('/nutricion/report/:id', nutritionists.report)
+
+router.get("/bookings", bookings.getBookingTimes)
+router.get("/bookings/getNutris", bookings.getNutris)
+router.post("/bookings/updateAvailBookings", auth.authNutri, bookings.setBookingTimes)
+router.post("/bookings/addBooking", bookings.addBooking)
+router.get("/bookings/getBookings", bookings.getBookings)
+// router.get("/bookings/getBookingsNut", auth.authNutri, bookings.getBookingNut)
+
+router.post("/saveCalendarToken", auth.authNutri, bookings.setCalendarToken)
 
 router.get('*', function(req, res) {
   res.send({
