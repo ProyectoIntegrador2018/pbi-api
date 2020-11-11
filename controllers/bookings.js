@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken")
 const { CLIENT_ID, CLIENT_SECRET } = process.env 
 const {SECRET} = require('../config');
 
+let redirect_uri = process.env.NODE_ENV == "production" ? "https://pbi-mty.netlify.app/oauthCallback" : "http://localhost:8080/oauthCallback"
+
 async function refreshToken(refresh_token) {
     const { data } = await axios.post("https://oauth2.googleapis.com/token", {
         client_id: CLIENT_ID,
@@ -42,7 +44,7 @@ const setCalendarToken = async function (req, res) {
                 client_secret: CLIENT_SECRET,
                 code: calendarToken,
                 grant_type: "authorization_code",
-                redirect_uri: "http://localhost:8080/oauthCallback"
+                redirect_uri
             })
 
             if (!tokenData.refresh_token) {
