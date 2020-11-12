@@ -44,6 +44,31 @@ async function getWorksheetData(appointments) {
             highImc: 0,
             veryHighImc: 0,
         },
+function createEmptyImcCount() {
+    return {
+        lowImc: 0,
+        normalImc: 0,
+        highImc: 0,
+        veryHighImc: 0,
+    };
+}
+
+function sumImcCount(leftImc, rightImc) {
+    return {
+        lowImc: leftImc.lowImc + rightImc.lowImc,
+        normalImc: leftImc.normalImc + rightImc.normalImc,
+        highImc: leftImc.highImc + rightImc.highImc,
+        veryHighImc: leftImc.veryHighImc + rightImc.veryHighImc,
+    };
+}
+
+function genderedImcSum(leftImc, rightImc) {
+    return {
+        men: sumImcCount(leftImc.men, rightImc.men),
+        women: sumImcCount(leftImc.women, rightImc.women),
+    };
+}
+
     }
     for (appointment of appointments) {
         const record = await Record.findById(appointment.record);
