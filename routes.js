@@ -14,6 +14,7 @@ const nutritionists = require('./controllers/nutritionists.js')
 const appointment = require('./controllers/appointments.js')
 const accounts = require('./controllers/accounts.js')
 const bookings = require("./controllers/bookings")
+const excel = require('./controllers/excelManipulation.js');
 
 router.all('*', cors())
 
@@ -103,6 +104,8 @@ router.get('/nutricion/nutritionist/:id', nutritionists.getNutritionist)
 router.post('/nutricion/login', nutritionists.login)
 router.post('/nutricion/logout', auth.authNutri, nutritionists.logout)
 router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
+router.get('/nutricion/excel/global', auth.authNutri ,excel.globalIndicators);
+router.get('/nutricion/excel/nutri', auth.authNutri, excel.nutrionistIndicators);
 
 router.post('/nutricion/records', auth.authNutri, records.createRecord)
 router.post('/nutricion/records/history/:id', records.createRecordHistory)

@@ -150,6 +150,9 @@ const report = async function (req, res) {
         const dateApp = new Date(appoint.date)
         dateApp.setHours(dateApp.getHours() - 24)
         var record = await Record.findOne({ appointments: appoint._id })
+        if (!record) {
+            continue;
+        }
 
         if (!grouped[record._id]) {
             grouped[record._id] = record

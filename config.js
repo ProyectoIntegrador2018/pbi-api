@@ -17,3 +17,5 @@ exports.PORT = process.env.PORT || 3000;
 exports.SECURE = process.env.SECURE || false;
 
 exports.NEW_NUTRI_CODE = process.env.NUTRI_CODE || "secretToken";
+
+exports.EXCEL_TEMPLATE = process.env.EXCEL_TEMPLATE || 'assets/excel.xlsx';
