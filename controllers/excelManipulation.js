@@ -102,18 +102,23 @@ async function fillExcelTemplate(nutrionist_id) {
         return null;
     }
     const appointments = await getLatestAppointmentsData(null);
-    const worksheetData = await getWorksheetData(appointments);
-    const sheet = workbook.sheet("Sheet1");
-    const men = worksheetData.men;
-    const women = worksheetData.women;
-    sheet.cell("C2").value(men.lowImc);
-    sheet.cell("D2").value(men.normalImc);
-    sheet.cell("E2").value(men.highImc);
-    sheet.cell("F2").value(men.veryHighImc);
-    sheet.cell("H2").value(women.lowImc);
-    sheet.cell("I2").value(women.normalImc);
-    sheet.cell("J2").value(women.highImc);
-    sheet.cell("K2").value(women.veryHighImc)
+    const worksheetsData = await getWorksheetsData(appointments);
+    console.log(worksheetsData);
+    for (const sheetName in worksheetsData) {
+        console.log(sheetName);
+        const sheet = workbook.sheet(sheetName);
+        const sheetData = worksheetsData[sheetName];
+        const men = sheetData.men;
+        const women = sheetData.women;
+        sheet.cell("C2").value(men.lowImc);
+        sheet.cell("D2").value(men.normalImc);
+        sheet.cell("E2").value(men.highImc);
+        sheet.cell("F2").value(men.veryHighImc);
+        sheet.cell("H2").value(women.lowImc);
+        sheet.cell("I2").value(women.normalImc);
+        sheet.cell("J2").value(women.highImc);
+        sheet.cell("K2").value(women.veryHighImc)
+    }
     return workbook;
 }
 
