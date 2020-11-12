@@ -30,20 +30,6 @@ async function getLatestAppointmentsData(nutrionist_id) {
     return appointments.map(elem => elem.data);
 }
 
-async function getWorksheetData(appointments) {
-    let data = {
-        men: {
-            lowImc: 0,
-            normalImc: 0,
-            highImc: 0,
-            veryHighImc: 0,
-        },
-        women: {
-            lowImc: 0,
-            normalImc: 0,
-            highImc: 0,
-            veryHighImc: 0,
-        },
 function createEmptyImcCount() {
     return {
         lowImc: 0,
@@ -69,14 +55,30 @@ function genderedImcSum(leftImc, rightImc) {
     };
 }
 
+function createEmptyProgramsData() {
+    let programData = {};
+    for (const program of programs) {
+        programData[program] = {
+            men: createEmptyImcCount(),
+            women: createEmptyImcCount(),
+        };
     }
-    for (appointment of appointments) {
+    return programData;
+}
+
+async function getWorksheetsData(appointments) {
+    let programsData = createEmptyProgramsData();
+    for (const appointment of appointments) {
         const record = await Record.findById(appointment.record);
         if (!record) {
             continue;
         }
+        const programData = programsData[record.program];
+        if (!programData) {
+            continue;
+        }
         const male = record.gender === "Hombre";
-        let genderData = male ? data.men : data.women;
+        let genderData = male ? programData.men : programData.women;
         const imc = Number(appointment.IMC);
         if (imc < 18.5) {
             genderData.lowImc += 1;
@@ -87,14 +89,11 @@ function genderedImcSum(leftImc, rightImc) {
         } else {
             genderData.veryHighImc += 1;
         }
-        if (male) {
-            data.men = genderData;
-        } else {
-            data.women = genderData;
-        }
     }
+    const allPrograms = Object.values(programsData).reduce(genderedImcSum);
+    programsData['Todos'] = allPrograms;
 
-    return data;
+    return programsData;
 }
 
 async function fillExcelTemplate(nutrionist_id) {
