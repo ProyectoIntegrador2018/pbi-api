@@ -6,6 +6,18 @@ const {
     EXCEL_TEMPLATE,
 } = require('../config');
 
+const programs = [
+    "PBI",
+    "CG",
+    "Cortesía",
+    "Clase deportiva",
+    "Intramuros",
+    "Representativos",
+    "Ev. Médica",
+    "Líderes",
+    "Otro",
+];
+
 async function getLatestAppointmentsData(nutrionist_id) {
     let pipeline = [
         { $sort: { "date": -1 } },
