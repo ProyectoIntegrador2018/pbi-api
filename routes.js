@@ -104,7 +104,8 @@ router.get('/nutricion/nutritionist/:id', nutritionists.getNutritionist)
 router.post('/nutricion/login', nutritionists.login)
 router.post('/nutricion/logout', auth.authNutri, nutritionists.logout)
 router.delete('/nutricion/nutritionist/:id', nutritionists.deleteNutritionist)
-router.get('/nutricion/excel', excel.generateExcel);
+router.get('/nutricion/excel/global', auth.authNutri ,excel.globalIndicators);
+router.get('/nutricion/excel/nutri', auth.authNutri, excel.nutrionistIndicators);
 
 router.post('/nutricion/records', auth.authNutri, records.createRecord)
 router.post('/nutricion/records/history/:id', records.createRecordHistory)
