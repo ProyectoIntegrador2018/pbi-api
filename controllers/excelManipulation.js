@@ -15,7 +15,6 @@ const programs = [
     "Representativos",
     "Ev. Médica",
     "Líderes",
-    "Otro",
 ];
 
 async function getLatestAppointmentsData(nutrionist_id) {
