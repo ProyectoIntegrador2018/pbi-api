@@ -102,9 +102,7 @@ async function fillExcelTemplate(nutrionist_id) {
     }
     const appointments = await getLatestAppointmentsData(null);
     const worksheetsData = await getWorksheetsData(appointments);
-    console.log(worksheetsData);
     for (const sheetName in worksheetsData) {
-        console.log(sheetName);
         const sheet = workbook.sheet(sheetName);
         const sheetData = worksheetsData[sheetName];
         const men = sheetData.men;
