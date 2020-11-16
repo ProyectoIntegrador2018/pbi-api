@@ -48,7 +48,7 @@ const setCalendarToken = async function (req, res) {
             })
 
             if (!tokenData.refresh_token) {
-                console.log(data)
+                console.log(tokenData)
                 return res.status(401).send({ error: "Hubo un error al obtener el código de autenticación" })
             }
 
@@ -125,7 +125,10 @@ const getBookings = async function (req, res) {
         return res.status(401).send({ error: "La fecha no es correcta" })
     }
 
-    let nutri = await Nutritionist.findOne({nomina: new RegExp(req.id) });
+    if (!req.query.nomina) {
+        return res.status(401).send({ error: "No se mandó código de nutriólogo" })
+    }
+    let nutri = await Nutritionist.findOne({nomina: new RegExp(req.query.nomina) });
     if (!nutri) {
         return res.status(401).send({ error: "No existe nutrióloga con esa nómina" })
     }
@@ -151,8 +154,6 @@ const getBookings = async function (req, res) {
             return res.status(401).send({ error: "No existe calendario para la nutrióloga" })
         } 
         let bookingsFinal = bookings.calendars[nutri.calendarID].busy;
-
-        // console.log(bookings.calendars[nutri.calendarID].busy)
 
         return res.status(200).send(bookingsFinal)
     } catch (e) {
