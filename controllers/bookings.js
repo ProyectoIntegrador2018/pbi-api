@@ -209,10 +209,25 @@ const addBooking = async function (req, res) {
                     responseStatus: "needsAction"
                 }
             ],
-            summary: `Cita con nutrióloga ${nutri.name} ${nutri.surname}`,
+            summary: `Cita con ${booking.patientName}`,
             status: "tentative",
             guestsCanInviteOthers: false,
-            transparency: "opaque"
+            transparency: "opaque",
+            description: 
+`¡Hola! ¿Como estas?
+
+Te explico lo que vamos a necesitar para la consulta:
+
+Bascula y/o cinta de medir.
+Cuaderno para anotaciones.
+Zoom: se envía el día de la consulta al correo.
+Ser muy puntual, ya que las consultas tiene una duración de 30 minutos.
+En caso de tener que cancelar la consulta, favor de avisar lo antes posible.
+
+Por el momento, las consultas en linea no tienen un costo.
+
+
+¡Muchas gracias por la confianza!`
         }, {
             params: {
                 sendNotifications: true,
