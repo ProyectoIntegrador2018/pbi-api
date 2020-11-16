@@ -6,6 +6,17 @@ const {
     EXCEL_TEMPLATE,
 } = require('../config');
 
+const programs = [
+    "PBI",
+    "CG",
+    "Cortesía",
+    "Clase deportiva",
+    "Intramuros",
+    "Representativos",
+    "Ev. Médica",
+    "Líderes",
+];
+
 async function getLatestAppointmentsData(nutrionist_id) {
     let pipeline = [
         { $sort: { "date": -1 } },
@@ -18,28 +29,55 @@ async function getLatestAppointmentsData(nutrionist_id) {
     return appointments.map(elem => elem.data);
 }
 
-async function getWorksheetData(appointments) {
-    let data = {
-        men: {
-            lowImc: 0,
-            normalImc: 0,
-            highImc: 0,
-            veryHighImc: 0,
-        },
-        women: {
-            lowImc: 0,
-            normalImc: 0,
-            highImc: 0,
-            veryHighImc: 0,
-        },
+function createEmptyImcCount() {
+    return {
+        lowImc: 0,
+        normalImc: 0,
+        highImc: 0,
+        veryHighImc: 0,
+    };
+}
+
+function sumImcCount(leftImc, rightImc) {
+    return {
+        lowImc: leftImc.lowImc + rightImc.lowImc,
+        normalImc: leftImc.normalImc + rightImc.normalImc,
+        highImc: leftImc.highImc + rightImc.highImc,
+        veryHighImc: leftImc.veryHighImc + rightImc.veryHighImc,
+    };
+}
+
+function genderedImcSum(leftImc, rightImc) {
+    return {
+        men: sumImcCount(leftImc.men, rightImc.men),
+        women: sumImcCount(leftImc.women, rightImc.women),
+    };
+}
+
+function createEmptyProgramsData() {
+    let programData = {};
+    for (const program of programs) {
+        programData[program] = {
+            men: createEmptyImcCount(),
+            women: createEmptyImcCount(),
+        };
     }
-    for (appointment of appointments) {
+    return programData;
+}
+
+async function getWorksheetsData(appointments) {
+    let programsData = createEmptyProgramsData();
+    for (const appointment of appointments) {
         const record = await Record.findById(appointment.record);
         if (!record) {
             continue;
         }
+        const programData = programsData[record.program];
+        if (!programData) {
+            continue;
+        }
         const male = record.gender === "Hombre";
-        let genderData = male ? data.men : data.women;
+        let genderData = male ? programData.men : programData.women;
         const imc = Number(appointment.IMC);
         if (imc < 18.5) {
             genderData.lowImc += 1;
@@ -50,14 +88,11 @@ async function getWorksheetData(appointments) {
         } else {
             genderData.veryHighImc += 1;
         }
-        if (male) {
-            data.men = genderData;
-        } else {
-            data.women = genderData;
-        }
     }
+    const allPrograms = Object.values(programsData).reduce(genderedImcSum);
+    programsData['Todos'] = allPrograms;
 
-    return data;
+    return programsData;
 }
 
 async function fillExcelTemplate(nutrionist_id) {
@@ -66,18 +101,21 @@ async function fillExcelTemplate(nutrionist_id) {
         return null;
     }
     const appointments = await getLatestAppointmentsData(null);
-    const worksheetData = await getWorksheetData(appointments);
-    const sheet = workbook.sheet("Sheet1");
-    const men = worksheetData.men;
-    const women = worksheetData.women;
-    sheet.cell("C2").value(men.lowImc);
-    sheet.cell("D2").value(men.normalImc);
-    sheet.cell("E2").value(men.highImc);
-    sheet.cell("F2").value(men.veryHighImc);
-    sheet.cell("H2").value(women.lowImc);
-    sheet.cell("I2").value(women.normalImc);
-    sheet.cell("J2").value(women.highImc);
-    sheet.cell("K2").value(women.veryHighImc)
+    const worksheetsData = await getWorksheetsData(appointments);
+    for (const sheetName in worksheetsData) {
+        const sheet = workbook.sheet(sheetName);
+        const sheetData = worksheetsData[sheetName];
+        const men = sheetData.men;
+        const women = sheetData.women;
+        sheet.cell("C2").value(men.lowImc);
+        sheet.cell("D2").value(men.normalImc);
+        sheet.cell("E2").value(men.highImc);
+        sheet.cell("F2").value(men.veryHighImc);
+        sheet.cell("H2").value(women.lowImc);
+        sheet.cell("I2").value(women.normalImc);
+        sheet.cell("J2").value(women.highImc);
+        sheet.cell("K2").value(women.veryHighImc)
+    }
     return workbook;
 }
 
